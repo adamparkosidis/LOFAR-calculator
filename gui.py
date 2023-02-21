@@ -1,6 +1,6 @@
-import dash_html_components as html
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
+from dash import html
+from dash import dcc
 from datetime import date
 
 ###############################################################################
@@ -48,26 +48,21 @@ msgBox = dbc.Modal([
 ###############################################################################
 # Default values for various input fields
 ###############################################################################
-defaultParams = {'obsMode':'Interferometric',
-                 'tabMode':'Coherent',
-                 'obsTime':'28800',
-                 'calTime':'600',
-                 'Ncal': '2',
-                 'Ncore':'24',
+defaultParams = {'obsTime':'28800', 
+                 'Ncore':'24', 
                  'Nremote':'14',
-                 'Nint':'14',
-                 'Nchan':'64',
+                 'Nint':'14', 
+                 'Nchan':'64', 
                  'Nsb':'488',
-                 'intTime':'1',
+                 'intTime':'1', 
                  'hbaDual':'hbadualinner',
-                 'Nrings':'0',
-
-                 'pipeType':'none',
-                 'tAvg':'1',
-                 'fAvg':'4',
+                 
+                 'pipeType':'none', 
+                 'tAvg':'1', 
+                 'fAvg':'4', 
                  'dyCompress':'enable',
-
-                 'targetName':'',
+                 
+                 'targetName':'', 
                  'target_coord':'',
                 }
 
@@ -86,101 +81,42 @@ dropWidth = 4
 ###############################################################################
 # Layout of observational setup
 ###############################################################################
-obsMode = dbc.FormGroup([
-          dbc.Label('Observation mode', width=labelWidth),
-          dbc.Col(
-            dcc.Dropdown(
-                options=[
-                    {'label':'Interferometric', 'value':'Interferometric'},
-                    {'label':'Beamformed', 'value':'Beamformed'}
-                ], value=defaultParams['obsMode'], searchable=False,
-                   clearable=False, id='obsModeRow'
-            ), width=dropWidth
-          )
-        ], row=True)
-tabMode = dbc.FormGroup([
-          dbc.Label('Tied array mode', width=labelWidth, id='tabModeRowL'),
-          dbc.Col(
-            dcc.Dropdown(
-                options=[
-                    {'label':'Coherent', 'value':'Coherent'},
-                    {'label':'Incoherent', 'value':'Incoherent'}
-                ], value=defaultParams['tabMode'], searchable=False,
-                   clearable=False, id='tabModeRow'
-            ), width=dropWidth, id='tabModeCol'
-          )
-        ], row=True, id='tabModeForm')
-stokes = dbc.FormGroup([
-          dbc.Label('Stokes products to record', width=labelWidth, id='stokesRowL'),
-          dbc.Col(
-            dcc.Dropdown(
-                options=[], searchable=False,
-                   clearable=False, id='stokesRow'
-            ), width=dropWidth
-          )
-        ], row=True, id='stokesForm')
 obsTime = dbc.FormGroup([
             dbc.Label('Observation time (in seconds)', width=labelWidth),
             dbc.Col(
-                dbc.Input(type='text',
-                          id='obsTimeRow',
+                dbc.Input(type='text', 
+                          id='obsTimeRow', 
                           value=defaultParams['obsTime']
                 ), width=inpWidth
             )
           ], row=True)
-
-calTime = dbc.FormGroup([
-            dbc.Label('Calibrator duration (in seconds)', width=labelWidth),
-            dbc.Col(
-                dbc.Input(type='text',
-                          id='calTimeRow',
-                          value=defaultParams['calTime']
-                ), width=inpWidth
-            )
-          ], row=True)
-
-Ncal = dbc.FormGroup([
-            dbc.Label('No. of calibrator observations', width=labelWidth),
-            dbc.Col(
-                dbc.Input(type='number',
-                          id='nCalRow',
-                          value=defaultParams['Ncal']
-                ), width=inpWidth
-            )
-        ], row=True)
-
-
 Ncore = dbc.FormGroup([
             dbc.Label('No. of core stations (0 - 24)', width=labelWidth),
             dbc.Col(
-                dbc.Input(type='number',
+                dbc.Input(type='number', 
                           id='nCoreRow',
                           value=defaultParams['Ncore']
                 ), width=inpWidth
             )
         ], row=True)
 Nremote = dbc.FormGroup([
-            dbc.Label('No. of remote stations (0 - 14)', width=labelWidth,
-                      id='nRemoteRowL'
-            ),
+            dbc.Label('No. of remote stations (0 - 14)', width=labelWidth),
             dbc.Col(
-                dbc.Input(type='number',
+                dbc.Input(type='number', 
                           id='nRemoteRow',
                           value=defaultParams['Nremote']
                 ), width=inpWidth
-            )
-        ], row=True, id='nRemoteForm')
+            )            
+        ], row=True)
 Nint = dbc.FormGroup([
-            dbc.Label('No. of international stations (0 - 14)', width=labelWidth,
-                      id='nIntRowL'
-            ),
+            dbc.Label('No. of international stations (0 - 14)', width=labelWidth),
             dbc.Col(
-                dbc.Input(type='number',
+                dbc.Input(type='number', 
                           id='nIntRow',
                           value=defaultParams['Nint']
                 ), width=inpWidth
             )
-        ], row=True, id='nIntForm')
+        ], row=True)
 Nchan = dbc.FormGroup([
           dbc.Label('Number of channels per subband', width=labelWidth),
           dbc.Col(
@@ -197,7 +133,7 @@ Nchan = dbc.FormGroup([
 Nsb = dbc.FormGroup([
             dbc.Label('Number of subbands', width=labelWidth),
             dbc.Col(
-                dbc.Input(type='number',
+                dbc.Input(type='number', 
                           id='nSbRow',
                           value=defaultParams['Nsb']
                 ), width=inpWidth
@@ -206,7 +142,7 @@ Nsb = dbc.FormGroup([
 intTime = dbc.FormGroup([
             dbc.Label('Integration time (in seconds)', width=labelWidth),
             dbc.Col(
-                dbc.Input(type='text',
+                dbc.Input(type='text', 
                           id='intTimeRow',
                           value=defaultParams['intTime']
                 ), width=inpWidth
@@ -220,7 +156,7 @@ hbaDual = dbc.FormGroup([
                         {'label':'LBA Outer', 'value':'lbaouter'},
                         {'label':'HBA Dual', 'value':'hbadual'},
                         {'label':'HBA Dual Inner', 'value':'hbadualinner'}
-                    ], value=defaultParams['hbaDual'], searchable=False,
+                    ], value=defaultParams['hbaDual'], searchable=False, 
                        clearable=False, id='hbaDualRow',
                 ), width=dropWidth
             )
@@ -238,7 +174,7 @@ link = html.Div([
                  style={'display':'none'}
           )
        ])
-obsGUISetup = dbc.Form([obsMode, tabMode, stokes, obsTime, calTime, Ncal, Ncore, Nremote, Nint, Nchan,
+obsGUISetup = dbc.Form([obsTime, Ncore, Nremote, Nint, Nchan, 
                         Nsb, intTime, hbaDual, buttons, link])
 
 obsGUIFrame = html.Div(children=[
@@ -280,27 +216,11 @@ fAvg = dbc.FormGroup([
                      id='fAvgRowL'
            ),
            dbc.Col(
-            dcc.Dropdown(
-                    options=[
-                        {'label':'1', 'value':1},
-                        {'label':'2', 'value':2},
-                        {'label':'4', 'value':4},
-                        {'label':'8', 'value':8},
-                        {'label':'16', 'value':16},
-                        {'label':'32', 'value':32},
-                        {'label':'64', 'value':64},
-                        {'label':'128', 'value':128},
-                        {'label':'256', 'value':256}
-                    ], value=defaultParams['fAvg'],
-                       clearable=False, id='fAvgRow',
-                ), width=dropWidth
-
-
-#            dbc.Input(type='number',
-#                      id='fAvgRow',
-#                      min=0,
-#                      value=defaultParams['fAvg']
-#            ), width=inpWidth
+            dbc.Input(type='number', 
+                      id='fAvgRow', 
+                      min=0,
+                      value=defaultParams['fAvg']
+            ), width=inpWidth
            )
        ], row=True)
 dyCompress = dbc.FormGroup([
@@ -341,18 +261,8 @@ targetName = dbc.FormGroup([
              ], row=True)
 targetCoord = dbc.FormGroup([
                  dbc.Label('Coordinates', width=labelWidth-inpWidth),
-                 dbc.Col(dbc.Input(id='coordRow'), width=inpWidth*2)
+                 dbc.Col(dbc.Input(id='coordRow'), width=inpWidth*2)               
               ], row=True)
-Nrings = dbc.FormGroup([
-            dbc.Label('No. of TAB rings (0 - 8)', width=labelWidth-inpWidth,
-                      id='nRingsRowL'),
-            dbc.Col(
-                dbc.Input(type='number',
-                          id='nRingsRow',
-                          value=defaultParams['Nrings']
-                ), width=inpWidth,
-            )
-         ], row=True, id='nRingsForm')
 obsDate = dbc.FormGroup([
              dbc.Label('Observation date', width=labelWidth-inpWidth),
              dbc.Col(dcc.DatePickerSingle(date=date.today(),
@@ -383,12 +293,12 @@ demixList = dbc.FormGroup([
                              {'label':'CasA', 'value':'CasA'},
                              {'label':'CygA', 'value':'CygA'},
                              {'label':'TauA', 'value':'TauA'}
-                        ], searchable=True, clearable=True,
+                        ], searchable=True, clearable=True, 
                            id='demixListRow', multi=True
                      ), width=dropWidth
              )
           ], row=True)
-targetGUISetup = dbc.Form([targetName, targetCoord, Nrings, obsDate, calList, demixList])
+targetGUISetup = dbc.Form([targetName, targetCoord, obsDate, calList, demixList])
 pipeGUIFrame = html.Div(children=[
                 html.H3('Target setup'),
                 html.Hr(),
@@ -401,15 +311,7 @@ pipeGUIFrame = html.Div(children=[
 ###############################################################################
 # Layout of the results tab
 ###############################################################################
-imNoise = dbc.FormGroup([
-            dbc.Label('Theoretical image sensitivity (uJy/beam)', width=labelWidth,
-                      id='imNoiseRowL'),
-            dbc.Col(
-                dbc.Input(type='text', id='imNoiseRow', value='',
-                          disabled=True
-                ), width=inpWidth
-            )
-          ], row=True)
+
 rawSize = dbc.FormGroup([
             dbc.Label('Raw data size (in GB)', width=labelWidth),
             dbc.Col(
@@ -428,7 +330,7 @@ pipeSize = dbc.FormGroup([
             )
           ], row=True)
 pipeProcTime = dbc.FormGroup([
-                  dbc.Label('Pipeline processing time (in hours)',
+                  dbc.Label('Pipeline processing time (in hours)', 
                             width=labelWidth, id='pipeProcTimeRowL'),
                   dbc.Col(
                      dbc.Input(type='text', id='pipeProcTimeRow', value='',
@@ -436,6 +338,15 @@ pipeProcTime = dbc.FormGroup([
                      ), width=inpWidth
                   )
                ], row=True)
+table = html.Div([
+          dbc.Row([
+           dbc.Col(
+              html.Div([
+                 dcc.Graph(id='sensitivity-table')
+              ]), width=16
+           )
+        ])
+        ])
 warntext = \
 """
 **Notes:**
@@ -449,7 +360,7 @@ LUCI (version 20200114) was written and is maintained for the LOFAR Science Oper
 cautiontext = html.Div([
                   dcc.Markdown(children=warntext)
               ], style={'width':'90%'})
-resultGUISetup = dbc.Form([imNoise, rawSize, pipeSize, pipeProcTime, cautiontext])
+resultGUISetup = dbc.Form([rawSize, pipeSize, pipeProcTime, table, cautiontext])
 resultGUIFrame = html.Div(children=[
                     html.H3('Results'),
                     html.Hr(),
@@ -503,7 +414,7 @@ layout = html.Div([dbc.Row(dbc.Col(header)),
                             dbc.Col(resultGUIFrame)
                    ]),
                    graph,
-
+                     
                    msgBoxTAvg, msgBoxFAvg,
                    msgBoxResolve, msgBoxGenPdf, msgBox
          ])

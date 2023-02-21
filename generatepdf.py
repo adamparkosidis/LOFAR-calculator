@@ -71,10 +71,10 @@ def make_pdf_plot(elevation_fig, outfilename):
     plt.tight_layout()
     plt.savefig(outfilename, dpi=100)
 
-def generate_pdf(pdf_file, obs_t, cal_t, n_cal, n_core, n_remote, n_int, n_chan, n_sb, integ_t,
-                 antenna_set, coord, pipe_type, t_avg, f_avg, is_dysco, im_noise_val,
+def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t,
+                 antenna_set, coord, pipe_type, t_avg, f_avg, is_dysco, sensitivity_table,
                  raw_size, proc_size, pipe_time, elevation_fig, distance_table,
-                 obs_date, obs_mode, tab_mode, stokes):
+                 obs_date):
     """Function to generate a pdf file summarizing the content of the calculator.
        Return nothing."""
     # Create an A4 sheet
@@ -82,46 +82,15 @@ def generate_pdf(pdf_file, obs_t, cal_t, n_cal, n_core, n_remote, n_int, n_chan,
     pdf.add_page()
     pdf.set_font('Arial', '', 16)
 
-    if coord is not '':
-        coord_list = coord.split(',')
-        coord_input_list = coord.split(',')
-        n_sap=len(coord_list)
-    else:
-        n_sap=None
-
     # Generate an html string to be written to the file
     string = '<table border="0" align="left" width="80%">'
     string += '<thead><tr><th width="70%" align="left">Parameter</th>'
     string += '<th width="30%" align="left">Value</th></tr></thead>'
     string += '<tbody>'
-    
-    if obs_mode == 'Interferometric':
-        string += '<tr><td>Observation mode</td>'
-        string += '    <td>Interferometric</td></tr>'
-    else:
-        string += '<tr><td>Observation mode</td>'
-        string += '    <td>Beamformed</td></tr>'
-        string += '<tr><td>Tied array mode</td>'
-        string += '    <td>{}</td></tr>'.format(tab_mode)
-        string += '<tr><td>Stokes products to record</td>'
-        string += '    <td>{}</td></tr>'.format(stokes)
-    
-    string += '<tr></tr>'
-    
     string += '<tr><td>Observation time (in seconds)</td>'
     string += '    <td>{}</td></tr>'.format(obs_t)
-    string += '<tr><td>Calibrator duration (in seconds)</td>'
-    string += '    <td>{}</td></tr>'.format(cal_t)
-    string += '<tr><td>Number of calibrators</td>'
-    string += '    <td>{}</td></tr>'.format(n_cal)
-    if n_sap:
-        string += '<tr><td>Number of simultaneous targets</td>'
-        string += '    <td>{}</td></tr>'.format(n_sap)
     string += '<tr><td>No. of stations</td>'
-    if obs_mode == 'Beamformed' and tab_mode == 'Coherent':
-        string += '    <td>({}, {}, {})</td></tr>'.format(n_core, 0, 0)
-    else:
-        string += '    <td>({}, {}, {})</td></tr>'.format(n_core, n_remote, n_int)
+    string += '    <td>({}, {}, {})</td></tr>'.format(n_core, n_remote, n_int)
     string += '<tr><td>No. of subbands</td>'
     string += '    <td>{}</td></tr>'.format(n_sb)
     string += '<tr><td>No. of channels per subband</td>'
@@ -149,10 +118,6 @@ def generate_pdf(pdf_file, obs_t, cal_t, n_cal, n_core, n_remote, n_int, n_chan,
             string += '    <td>{}</td></tr>'.format('enabled')
         else:
             string += '    <td>{}</td></tr>'.format('disabled')
-    if obs_mode == 'Interferometric':
-        string += '<tr></tr>'
-        string += '<tr><td>Theoretical image sensitivity (uJy/beam)</td>'
-        string += '    <td>{}</td></tr>'.format(im_noise_val)
     string += '<tr><td>Raw data size (in GB)</td>'
     string += '    <td>{}</td></tr>'.format(raw_size)
     if pipe_type != 'none':
@@ -162,6 +127,30 @@ def generate_pdf(pdf_file, obs_t, cal_t, n_cal, n_core, n_remote, n_int, n_chan,
         string += '    <td>{}</td></tr>'.format(pipe_time)
     string += '</tbody>'
     string += '</table>'
+
+    # Add the sensitivity table to the PDF
+    if sensitivity_table != {}:
+        title = sensitivity_table['layout']['title']
+        string += '<center><b>{}</b></center>'.format(title)
+        string += '<table border="0" align="left" width="80%">'
+        col_titles = sensitivity_table['data'][0]['header']['values']
+        col_width = 110//len(col_titles)
+        string += '<thead><tr>'
+        for item in col_titles:
+            string += '<th width="{}%" align="left">'.format(col_width) + \
+                      item + '</th>'
+        string += '</tr></thead>'
+        string += '<tbody>'
+        tab_data = sensitivity_table['data'][0]['cells']['values']
+        # Transpose tab_data and write cells to the table
+        tab_data = list(map(list, zip(*tab_data)))
+        for row in tab_data:
+            string += '<tr>'
+            for item in row:
+                string += '<td>{}</td>'.format(item)
+            string += '</tr>'
+        string += '</tbody>'
+        string += '</table>'
 
     # Generate a matplotlib plot showing the same plot as in the target
     # visibility plot

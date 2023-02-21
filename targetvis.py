@@ -198,6 +198,7 @@ def resolve_source(names):
     return_string = []
     try:
         for name in names.split(','):
+            name = name.strip()
             query = Simbad.query_object(name)
             if query is None:
                 # Source is not a valid Simbad object. Is it a LoTSS pointing?
@@ -285,6 +286,65 @@ def get_elevation_target(target, obs_date, n_int):
             else:
                 yaxis.append(np.min(elevation))
     return yaxis
+def find_target_max_mean_elevation(src_name_list, coord, obs_date, obs_t, n_int):
+    """Input: target(s), coordinates, observation date and observation duration,
+    Output: mean elevation of the target(s) based on their maximum elevation. Find 
+    when the maximum elevation of a target occurs for a given date and calculate the
+    mean elevation between obs_t/2 before and after that. Return an array with the
+    the mean elevations."""
+    # Find the start and the end times
+    coord_list = coord.split(',')
+    d = obs_date.split('-')
+    start_time = datetime(int(d[0]), int(d[1]), int(d[2]), 0, 0, 0)
+    end_time = start_time + timedelta(days=1)
+    # Get a list of values along the time axis
+    xaxis = []
+    temp_time = start_time
+    while temp_time < end_time:
+        xaxis.append(temp_time)
+        temp_time += timedelta(minutes=5)
+
+    # Create a target object
+    return_data = []
+    for i in range(len(coord_list)):
+        target = FixedBody()
+        target._epoch = '2000'
+        coord_target = SkyCoord(coord_list[i])
+        target._ra = coord_target.ra.radian
+        target._dec = coord_target.dec.radian
+
+        # Iterate over each time interval and estimate the elevation of the target
+        yaxis = get_elevation_target(target, xaxis, n_int)
+        # Create a Plotly Scatter object that can be plotted later
+        return_data.append(Scatter(x=xaxis, y=yaxis, mode='lines',
+                                   line={}, name=src_name_list[i]))
+    
+    # Save maximum target elevation and datetime
+
+    maximum_elevations = []
+    maximum_elevations_datetime = []
+    mean_elevations = []
+
+    for ind, target in enumerate(return_data):
+        dates = np.array(target.x)
+        elevations = np.array(target.y)
+
+        maximum_elevations.append(np.nanmax(elevations))
+        ind = np.nanargmax(elevations)
+        maximum_elevations_datetime.append(dates[ind])
+        
+        min_date = dates[ind] - timedelta(seconds=obs_t)
+        max_date = dates[ind] + timedelta(seconds=obs_t)
+    
+        mean_elevations.append(np.nanmean(elevations[np.where(np.logical_and(np.array(dates) >= min_date,np.array(dates) <= max_date))[0]]))
+    # In case we need the maximum elevation and the dates
+    
+    # maxim_mean_elev_with_dates = []
+    # for i in zip(maximum_elevations, maximum_elevations_datetime, mean_elevations):
+    #     maxim_mean_elev_with_dates.append(i)
+    mean_elevations = np.array(mean_elevations)
+    return mean_elevations
+
 
 def find_target_elevation(src_name, coord, obs_date, n_int):
     """For a given date and coordinate, find the elevation of the source every
@@ -478,6 +538,46 @@ def make_distance_table(src_name_input, coord_input, obs_date):
                     '{:0.2f}'.format(d_jupiter)]
         # Add this row to the col_values table
         col_values.append(this_row)
+
+    tab = Table(
+        header=header,
+        cells=dict(values=col_values, align='left')
+    )
+    return tab
+def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_noise, antenna_mode):
+    """Generate a plotly Table showing the theoretical and efffective target 
+       sensitivities"""
+
+    col_names = ['Targets', 'Theoretical rms  (uJy/beam)', 'Effective rms  (uJy/beam)']
+
+    header = {
+        'values': col_names,
+        'font'  : {'size':12, 'color':'white'},
+        'align' : 'left',
+        'fill_color': 'grey',
+        'line_color': 'darkslategray'
+    }
+    col_values = [src_name_input.split(',')]
+
+    elevations = find_target_max_mean_elevation(src_name_input, coord_input, obs_date, float(obs_t), int(n_int))
+
+    if 'hba' in antenna_mode:
+        im_noise_eff = float(theor_noise) * 6.715*np.cos(np.deg2rad(90-elevations))**(-2)
+    else:
+        im_noise_eff = float(theor_noise) * np.cos(np.deg2rad(90-elevations))**(-1)
+    
+    theor_col = []
+    eff_col = []
+    # Iterate through the effective sensitivities and make columns
+    for eff_rms in im_noise_eff:
+        # the theoretical sensitivity column will have the same values
+        theor_col.append('{:0.2f}'.format(float(theor_noise)))
+        # the effective sensitivity column values change due to different elevations
+        eff_col.append('{:0.2f}'.format(float(eff_rms)))
+        
+    # Add the columns to the table
+    col_values.append(theor_col)
+    col_values.append(eff_col)
 
     tab = Table(
         header=header,
