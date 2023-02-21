@@ -60,12 +60,11 @@ def calculate_im_noise(n_core, n_remote, n_int, hba_mode, obs_t, n_sb):
     im_noise *= 1.E6 # In uJy
     return '{:0.2f}'.format(im_noise)
 
-def calculate_raw_size(obs_t, cal_t, n_cal, int_time, n_baselines, n_chan, n_sb, n_beams):
+def calculate_raw_size(obs_t, int_time, n_baselines, n_chan, n_sb):
     """Compute the datasize of a raw LOFAR measurement set given the
        length of the observation, correlator integration time, number
        of baselines, number of channels per subband, and number of subbands"""
-    # TODO: The below equation needs to be fixed (scale n_baselines).
-    n_rows = int(n_baselines * ( (obs_t*n_beams + cal_t*n_cal ) / int_time)) - n_baselines
+    n_rows = int(n_baselines * (obs_t / int_time)) - n_baselines
     # A single row in LofarStMan format contains
     #    - 32-bit sequence number (4 bytes)
     #    - n_chan*16-bit samples for weight and sigma calculation (2*n_chan bytes)
@@ -74,17 +73,7 @@ def calculate_raw_size(obs_t, cal_t, n_cal, int_time, n_baselines, n_chan, n_sb,
     tot_size = sb_size * n_sb
     return '{:0.2f}'.format(tot_size)
 
-def calculate_bf_size(n_sub, n_chan, n_pol, n_value, t_samp, obs_time):
-    """Calculate the datasize of a raw LOFAR beamformed dataset.
-       Based on equation from Cees Bassa available on confluence at
-       https://support.astron.nl/confluence/display/C2/Data+Rates 
-       For now, we always assume 32 bits and no downsampling factor"""
-    n_bit = 32
-    size_Gbs = n_sub * n_chan * n_pol * n_value * n_bit / (n_chan * t_samp * 1E-6)
-    size_GB = size_Gbs * obs_time / 8.
-    return size_GB
-
-def calculate_proc_size(obs_t, cal_t, n_cal, int_time, n_baselines, n_chan, n_sb, n_beams, pipe_type,
+def calculate_proc_size(obs_t, int_time, n_baselines, n_chan, n_sb, pipe_type,
                         t_avg, f_avg, dy_compress):
     """Compute the datasize of averaged LOFAR measurement set given the
        length of the observation, integration time, number of baselines,
@@ -97,7 +86,7 @@ def calculate_proc_size(obs_t, cal_t, n_cal, int_time, n_baselines, n_chan, n_sb
         n_chan //= f_avg
         # Change integ_t to account for t_avg
         int_time *= t_avg
-        n_rows = int(n_baselines * ( (obs_t*n_beams + cal_t*n_cal ) / int_time)) - n_baselines
+        n_rows = int(n_baselines * (obs_t / int_time)) - n_baselines
         # What does a single row in an averaged MS contain?
         sb_size = n_rows * ((7*8) + \
                          (4+(4*n_chan)) + \
@@ -113,7 +102,7 @@ def calculate_proc_size(obs_t, cal_t, n_cal, int_time, n_baselines, n_chan, n_sb
             tot_size = tot_size/3.
         return '{:0.2f}'.format(tot_size)
 
-def calculate_pipe_time(obs_t, cal_t, n_cal, n_sb, n_beams, array_mode, ateam_names, pipe_type):
+def calculate_pipe_time(obs_t, n_sb, array_mode, ateam_names, pipe_type):
     """Compute the pipeline processing time.
        Inputs:
            obs_t - Observation time in hours
@@ -134,14 +123,14 @@ def calculate_pipe_time(obs_t, cal_t, n_cal, n_sb, n_beams, array_mode, ateam_na
 
     if pipe_type == 'preprocessing':
         if 'hba' in array_mode:
-            proc_time = hba_factor[n_ateams] * n_sb * ( obs_t * n_beams + cal_t * n_cal )
+            proc_time = hba_factor[n_ateams] * n_sb * obs_t
         else:
-            proc_time = lba_factor[n_ateams] * n_sb * ( obs_t * n_beams + cal_t * n_cal )
+            proc_time = lba_factor[n_ateams] * n_sb * obs_t
     # Convert to hours
     proc_time /= 3600.
     return proc_time
 
-def validate_inputs(obs_t, cal_t, n_cal, n_core, n_remote, n_int, n_sb, integ_t, t_avg,
+def validate_inputs(obs_t, n_core, n_remote, n_int, n_sb, integ_t, t_avg,
                     f_avg, src_name, coord, hba_mode, pipe_type, ateam_names):
     """Valid text input supplied by the user: observation time, number of
        subbands, and integration time. Following checks will be performed:
@@ -161,29 +150,13 @@ def validate_inputs(obs_t, cal_t, n_cal, n_core, n_remote, n_int, n_sb, integ_t,
        Return state=True/False accompanied by an error msg
        Note: all input parameters are still strings."""
     msg = ''
-    # Validate the length of the observing times
+    # Validate the length of the observing time
     try:
         float(obs_t)
-        if float(obs_t) < 0:
-            msg += 'Observation time cannot be negative.\n'
+        if float(obs_t) <= 0:
+            msg += 'Observation time cannot be zero or negative.\n'
     except ValueError:
         msg += 'Invalid observation time specified.\n'
-    try:
-        float(cal_t)
-        if float(cal_t) < 0:
-            msg += 'Calibrator duration cannot be negative.\n'
-    except ValueError:
-        msg += 'Invalid calibrator duration specified.\n'
-    try:
-        float(cal_t)+float(obs_t)
-        if float(cal_t)+float(obs_t) <= 0:
-            msg += 'One of Observation time and Calibration duration must be at least one.\n'
-    except ValueError:
-        msg += 'Invalid calibrator duration or observation time specified.\n'
-
-    # Validate the number of calibrators
-    if n_cal < 0:
-        msg += 'Number of calibrators cannot be negative.\n'
     # Validate the number of stations
     if n_core < 0 or n_core > 24:
         msg += 'Number of core stations must be between 0 and 24.\n'
