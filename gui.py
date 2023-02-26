@@ -48,13 +48,13 @@ msgBox = dbc.Modal([
 ###############################################################################
 # Default values for various input fields
 ###############################################################################
-defaultParams = {'obsTime':'28800', 
-                 'Ncore':'24', 
+defaultParams = {'obsTime':'28800',
+                 'Ncore':'24',
                  'Nremote':'14',
-                 'Nint':'14', 
-                 'Nchan':'64', 
+                 'Nint':'14',
+                 'Nchan':'64',
                  'Nsb':'488',
-                 'intTime':'1', 
+                 'intTime':'1',
                  'hbaDual':'hbadualinner',
                  
                  'pipeType':'none', 
@@ -84,8 +84,8 @@ dropWidth = 4
 obsTime = dbc.FormGroup([
             dbc.Label('Observation time (in seconds)', width=labelWidth),
             dbc.Col(
-                dbc.Input(type='text', 
-                          id='obsTimeRow', 
+                dbc.Input(type='text',
+                          id='obsTimeRow',
                           value=defaultParams['obsTime']
                 ), width=inpWidth
             )
@@ -93,7 +93,7 @@ obsTime = dbc.FormGroup([
 Ncore = dbc.FormGroup([
             dbc.Label('No. of core stations (0 - 24)', width=labelWidth),
             dbc.Col(
-                dbc.Input(type='number', 
+                dbc.Input(type='number',
                           id='nCoreRow',
                           value=defaultParams['Ncore']
                 ), width=inpWidth
@@ -133,7 +133,7 @@ Nchan = dbc.FormGroup([
 Nsb = dbc.FormGroup([
             dbc.Label('Number of subbands', width=labelWidth),
             dbc.Col(
-                dbc.Input(type='number', 
+                dbc.Input(type='number',
                           id='nSbRow',
                           value=defaultParams['Nsb']
                 ), width=inpWidth
@@ -142,7 +142,7 @@ Nsb = dbc.FormGroup([
 intTime = dbc.FormGroup([
             dbc.Label('Integration time (in seconds)', width=labelWidth),
             dbc.Col(
-                dbc.Input(type='text', 
+                dbc.Input(type='text',
                           id='intTimeRow',
                           value=defaultParams['intTime']
                 ), width=inpWidth
@@ -293,7 +293,7 @@ demixList = dbc.FormGroup([
                              {'label':'CasA', 'value':'CasA'},
                              {'label':'CygA', 'value':'CygA'},
                              {'label':'TauA', 'value':'TauA'}
-                        ], searchable=True, clearable=True, 
+                        ], searchable=True, clearable=True,
                            id='demixListRow', multi=True
                      ), width=dropWidth
              )
@@ -320,6 +320,7 @@ rawSize = dbc.FormGroup([
                 ), width=inpWidth
             )
           ], row=True)
+
 pipeSize = dbc.FormGroup([
             dbc.Label('Processed data size (in GB)', width=labelWidth,
                       id='pipeSizeRowL'),
@@ -330,7 +331,7 @@ pipeSize = dbc.FormGroup([
             )
           ], row=True)
 pipeProcTime = dbc.FormGroup([
-                  dbc.Label('Pipeline processing time (in hours)', 
+                  dbc.Label('Pipeline processing time (in hours)',
                             width=labelWidth, id='pipeProcTimeRowL'),
                   dbc.Col(
                      dbc.Input(type='text', id='pipeProcTimeRow', value='',
@@ -414,7 +415,7 @@ layout = html.Div([dbc.Row(dbc.Col(header)),
                             dbc.Col(resultGUIFrame)
                    ]),
                    graph,
-                     
+
                    msgBoxTAvg, msgBoxFAvg,
                    msgBoxResolve, msgBoxGenPdf, msgBox
          ])

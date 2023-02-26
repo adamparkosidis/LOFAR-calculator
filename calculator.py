@@ -199,7 +199,7 @@ def on_resolve_click(n, close_msg_box, target_name, is_open):
 def on_genpdf_click(n_clicks, close_msg_box, obs_t, n_core, n_remote, n_int, n_chan,
                     n_sb, integ_t, ant_set, coord, pipe_type, t_avg, f_avg, is_dysco,
                      raw_size, proc_size, pipe_time, sensitivity_table, is_msg_box_open,
-                    elevation_fig, distance_table, obs_date):
+                    elevation_fig_pdf, distance_table, obs_date):
     """Function defines what to do when the generate pdf button is clicked"""
     if is_msg_box_open is True and close_msg_box is not None:
         # The message box is open and the user has clicked the close
@@ -220,9 +220,9 @@ def on_genpdf_click(n_clicks, close_msg_box, obs_t, n_core, n_remote, n_int, n_c
             rel_path = os.path.join(rel_path, 'summary_{}.pdf'.format(randnum))
             abs_path = os.path.join(os.getcwd(), rel_path)
             g.generate_pdf(rel_path, obs_t, n_core, n_remote, n_int, n_chan,
-                           n_sb, integ_t, ant_set, coord, pipe_type, t_avg, f_avg,
+                           n_sb, integ_t, ant_set, pipe_type, t_avg, f_avg,
                            is_dysco, raw_size, proc_size, pipe_time, sensitivity_table,
-                           elevation_fig, distance_table, obs_date)
+                           elevation_fig_pdf, distance_table, obs_date)
             return {'display':'block'}, '/luci/{}'.format(rel_path), False
 
 @app.server.route('/luci/static/<resource>')
@@ -382,21 +382,26 @@ def on_calculate_click(n, n_clicks, obs_t, n_core, n_remote, n_int, n_chan, n_sb
                     return '', '', '', {'display':'none'}, {}, msg, True, \
                            {'display':'none'}, {}, {'display':'none'}, {}, \
                            {'display':'none'}, {}
-                # Find target elevation across a 24-hour period
-                data = tv.find_target_elevation(src_name, coord_list,
-                                                obs_date, int(n_int))
+                
+                # Create a figure with the elevation of the targets
+                elevation_fig = tv.create_fig_add_lst_axis(src_name, coord_list, obs_date, int(n_int))
+
+                # Save an object with the data of the figure for pdf generator
+                elevation_fig_pdf = elevation_fig.data
+                # data = tv.find_target_elevation(src_name, coord_list,
+                #                                 obs_date, int(n_int))
+
                 display_fig = {'display':'block', 'height':600}
-                elevation_fig = {'data':data,
-                                 'layout':{
-                                     'xaxis':{'title':'Time (UTC)'},
-                                     'yaxis':{'title':'Elevation'},
-                                     'title':'Target visibility plot',
-                                     'shapes':[]
-                                 }
-                                }
-                elevation_fig = tv.add_sun_rise_and_set_times(obs_date,
-                                                              int(n_int),
-                                                              elevation_fig)
+
+                # elevation_fig = {'data':data,
+                #     'layout':{
+                #     'xaxis':{'title':'Time (UTC)'},
+                #     'yaxis':{'title':'Elevation'},
+                #     'title':'Target visibility plot',
+                #     'shapes':[]
+                #     }
+                #     }
+
                 # Find the position of the station and tile beam
                 beam_fig = tv.find_beam_layout(src_name_input, coord_input, \
                                    int(n_core), int(n_remote), int(n_int), hba_mode)
@@ -411,8 +416,7 @@ def on_calculate_click(n, n_clicks, obs_t, n_core, n_remote, n_int, n_chan, n_sb
                                }
                 display_sens_tab = {'display':'block'}
                 sens_table_data = [tv.make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, im_noise, hba_mode)]
-                sens_table_title = 'Sensitivity ' +\
-                             'Results'
+                sens_table_title = 'Sensitivity Results'
                 sensitivity_tab = {'data':sens_table_data,
                                 'layout':{'title':sens_table_title, 'autosize':True}
                               }

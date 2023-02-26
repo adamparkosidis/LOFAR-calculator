@@ -7,6 +7,7 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
+
 # Dummy class needed to generate the PDF file
 class MyFPDF(FPDF, HTMLMixin):
     """Dummy class"""
@@ -26,11 +27,15 @@ def convert_figure_to_axis_info(figure):
     label = figure['name']
     return xaxis, yaxis, label
 
+# def make_pdf_plot(elevation_fig, outfilename):
+#     elevation_fig.write_image(outfilename)
+
 def make_pdf_plot(elevation_fig, outfilename):
     """For a given elevation_fig object and output filename, generate a
        matplotlib plot and write it to disk."""
     fig, ax = plt.subplots(1, 1, figsize=(8, 5))
-    for figure in elevation_fig['data']:
+    # The last figure containt the lst axis data, which is type str
+    for figure in elevation_fig['data'][:-1]:
         xaxis, yaxis, label = convert_figure_to_axis_info(figure)
         ax.plot(xaxis, yaxis, label=label)
     hour_loc = (0, 3, 6, 9, 12, 15, 18, 21)
@@ -72,8 +77,8 @@ def make_pdf_plot(elevation_fig, outfilename):
     plt.savefig(outfilename, dpi=100)
 
 def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t,
-                 antenna_set, coord, pipe_type, t_avg, f_avg, is_dysco, sensitivity_table,
-                 raw_size, proc_size, pipe_time, elevation_fig, distance_table,
+                 antenna_set, pipe_type, t_avg, f_avg, is_dysco, raw_size, proc_size, 
+                 pipe_time, sensitivity_table, elevation_fig, distance_table,
                  obs_date):
     """Function to generate a pdf file summarizing the content of the calculator.
        Return nothing."""

@@ -6,8 +6,11 @@ from astropy.coordinates import SkyCoord
 from astropy import units as u
 from ephem import Observer, FixedBody, Sun, Moon, Jupiter
 import numpy as np
-from plotly.graph_objs import Scatter
+#from plotly.graph_objs import Scatter
+import plotly.graph_objects as go
+from plotly.graph_objects import Scatter
 from plotly.graph_objects import Table
+from plotly.graph_objs.layout import XAxis
 
 # Define coordinates of calibrators
 CALIB_COORDINATES = {
@@ -286,6 +289,7 @@ def get_elevation_target(target, obs_date, n_int):
             else:
                 yaxis.append(np.min(elevation))
     return yaxis
+
 def find_target_max_mean_elevation(src_name_list, coord, obs_date, obs_t, n_int):
     """Input: target(s), coordinates, observation date and observation duration,
     Output: mean elevation of the target(s) based on their maximum elevation. Find 
@@ -337,18 +341,13 @@ def find_target_max_mean_elevation(src_name_list, coord, obs_date, obs_t, n_int)
         max_date = dates[ind] + timedelta(seconds=obs_t)
     
         mean_elevations.append(np.nanmean(elevations[np.where(np.logical_and(np.array(dates) >= min_date,np.array(dates) <= max_date))[0]]))
-    # In case we need the maximum elevation and the dates
-    
-    # maxim_mean_elev_with_dates = []
-    # for i in zip(maximum_elevations, maximum_elevations_datetime, mean_elevations):
-    #     maxim_mean_elev_with_dates.append(i)
     mean_elevations = np.array(mean_elevations)
     return mean_elevations
 
 
 def find_target_elevation(src_name, coord, obs_date, n_int):
     """For a given date and coordinate, find the elevation of the source every
-       10 mins. Return both the datetime object array and the elevation array"""
+       5 mins. Return both the datetime object array and the elevation array"""
     # Find the start and the end times
     d = obs_date.split('-')
     start_time = datetime(int(d[0]), int(d[1]), int(d[2]), 0, 0, 0)
@@ -424,7 +423,7 @@ def add_sun_rise_and_set_times(obs_date, n_int, elevation_fig):
         sun_set_beg = lv_sun_set - timedelta(minutes=30)
         sun_set_end = ie_sun_set + timedelta(minutes=30)
     # Add to elevation_fig
-    elevation_fig['layout']['shapes'].append({
+    elevation_fig.add_shape({
         'type': "rect",
         'xref': 'x',
         'yref': 'y',
@@ -436,7 +435,7 @@ def add_sun_rise_and_set_times(obs_date, n_int, elevation_fig):
         'opacity': 0.4,
         'line': {'width': 0,}
     })
-    elevation_fig['layout']['shapes'].append({
+    elevation_fig.add_shape({
         'type': "rect",
         'xref': 'x',
         'yref': 'y',
@@ -449,6 +448,73 @@ def add_sun_rise_and_set_times(obs_date, n_int, elevation_fig):
         'line': {'width': 0,}
     })
     return elevation_fig
+
+def create_fig_add_lst_axis(src_name, coord, obs_date, n_int):
+    """For a given elevation figure, create anad add a second x axis with the sidereal time. 
+    Dutch Lofar array is taken as the position of the observer. Return the figure"""
+    # Find the start and the end times
+    d = obs_date.split('-')
+    start_time = datetime(int(d[0]), int(d[1]), int(d[2]), 0, 0, 0)
+    end_time = start_time + timedelta(days=1)
+    # Get a list of values along the utc time axis
+    xaxis = []
+    temp_time = start_time
+    while temp_time < end_time:
+        xaxis.append(temp_time)
+        temp_time += timedelta(minutes=5)
+
+    # Define lofar's postion as the observser's position     
+    lofar = get_dutch_lofar_object()
+
+    # Get a list of values along the lst time axis    
+    xaxis_sidereal_t = []
+    for time in xaxis:
+            lofar.date = time
+            lst_time = lofar.sidereal_time()
+            lst_time = datetime.strptime(str(lst_time), '%H:%M:%S.%f')
+            xaxis_sidereal_t.append(lst_time.strftime('%H:%M')) 
+    
+    # Define custom layout for the figure
+
+    layout = go.Layout(
+    title='Target visibility plot',
+    xaxis=XAxis(
+        title="Time (UTC)"
+    ),
+    xaxis2 = XAxis(
+        title="Time (LST )",
+        overlaying= 'x', 
+        side= 'top',
+        nticks=8,
+    ),
+    yaxis=dict(
+        title="Elevation (deg)"
+    ))
+
+     # Create the figure
+    fig = go.Figure(layout=layout)
+    
+    # Find target elevation across a 24-hour period
+    targets = find_target_elevation(src_name, coord, obs_date, n_int)
+    
+    for i in targets:
+        fig.add_trace(i)
+
+    # Add sun rise and sun set at the figure
+    fig = add_sun_rise_and_set_times(obs_date, n_int, fig)
+
+    # Add second x axis at the top with the sidereal time
+    fig.add_trace(Scatter(x=xaxis_sidereal_t, y=targets[-1].y, xaxis= 'x2', hoverinfo='none',line={'width':0}, \
+                        showlegend = False))
+    
+    # new_hover_template = ('<b>%{text}</b><br>'
+    #                     'Date: %{x|%H:%M:%S}<br>'
+    #                   'Date: %{xaxis2|%H:%M:%S}<br>'
+    #                   'Y: %{y}')
+    
+    fig.update_layout(hovermode='x unified')
+    return fig   
+
 
 def get_distance_solar(target, obs_date, offender):
     """Compute the angular distance in degrees between the specified target and
