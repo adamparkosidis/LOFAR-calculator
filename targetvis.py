@@ -10,7 +10,6 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.graph_objects import Scatter
 from plotly.graph_objects import Table
-from plotly.graph_objs.layout import XAxis
 
 # Define coordinates of calibrators
 CALIB_COORDINATES = {
@@ -478,10 +477,10 @@ def create_fig_add_lst_axis(src_name, coord, obs_date, n_int):
 
     layout = go.Layout(
     title='Target visibility plot',
-    xaxis=XAxis(
+    xaxis=dict(
         title="Time (UTC)"
     ),
-    xaxis2 = XAxis(
+    xaxis2 = dict(
         title="Time (LST )",
         overlaying= 'x', 
         side= 'top',
@@ -489,22 +488,23 @@ def create_fig_add_lst_axis(src_name, coord, obs_date, n_int):
     ),
     yaxis=dict(
         title="Elevation (deg)"
-    ))
+    ),
+    hovermode='x unified')
 
      # Create the figure
     fig = go.Figure(layout=layout)
     
     # Find target elevation across a 24-hour period
-    targets = find_target_elevation(src_name, coord, obs_date, n_int)
+    traces = find_target_elevation(src_name, coord, obs_date, n_int)
     
-    for i in targets:
+    for i in traces:
         fig.add_trace(i)
 
     # Add sun rise and sun set at the figure
     fig = add_sun_rise_and_set_times(obs_date, n_int, fig)
 
     # Add second x axis at the top with the sidereal time
-    fig.add_trace(Scatter(x=xaxis_sidereal_t, y=targets[-1].y, xaxis= 'x2', hoverinfo='none',line={'width':0}, \
+    fig.add_trace(Scatter(x=xaxis_sidereal_t, y=traces[-1].y, xaxis= 'x2', hoverinfo='none',line={'width':0}, \
                         showlegend = False))
     
     # new_hover_template = ('<b>%{text}</b><br>'
@@ -512,7 +512,6 @@ def create_fig_add_lst_axis(src_name, coord, obs_date, n_int):
     #                   'Date: %{xaxis2|%H:%M:%S}<br>'
     #                   'Y: %{y}')
     
-    fig.update_layout(hovermode='x unified')
     return fig   
 
 
