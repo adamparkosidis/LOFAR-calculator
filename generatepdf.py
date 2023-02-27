@@ -136,7 +136,7 @@ def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t
     # Add the sensitivity table to the PDF
     if sensitivity_table != {}:
         title = sensitivity_table['layout']['title']
-        string += '<center><b>{}</b></center>'.format(title)
+        string += '<head><center><b>{}</b></center></head>'.format(title)
         string += '<table border="0" align="left" width="80%">'
         col_titles = sensitivity_table['data'][0]['header']['values']
         col_width = 110//len(col_titles)
@@ -171,7 +171,8 @@ def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t
     # Add the distance table to the PDF
     if distance_table != {}:
         title = distance_table['layout']['title']
-        string += '<center><b>{}</b></center>'.format(title)
+        string += '<center>{}</center>'.format(title)
+        #string += '<center><b>{}</b></center>'.format(title)
         string += '<table border="0" align="left" width="80%">'
         col_titles = distance_table['data'][0]['header']['values']
         col_width = 100//len(col_titles)

@@ -474,7 +474,6 @@ def create_fig_add_lst_axis(src_name, coord, obs_date, n_int):
             xaxis_sidereal_t.append(lst_time.strftime('%H:%M')) 
     
     # Define custom layout for the figure
-
     layout = go.Layout(
     title='Target visibility plot',
     xaxis=dict(
@@ -613,7 +612,7 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
     """Generate a plotly Table showing the theoretical and efffective target 
        sensitivities"""
 
-    col_names = ['Targets', 'Theoretical rms  (uJy/beam)', 'Effective rms  (uJy/beam)']
+    col_names = ['Targets', 'Theoretical rms (uJy/beam)', 'Effective rms (uJy/beam)', 'Effective rms uncertainty (uJy/beam)']
 
     header = {
         'values': col_names,
@@ -627,22 +626,31 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
     elevations = find_target_max_mean_elevation(src_name_input, coord_input, obs_date, float(obs_t), int(n_int))
 
     if 'hba' in antenna_mode:
-        im_noise_eff = float(theor_noise) * 6.715*np.cos(np.deg2rad(90-elevations))**(-2)
+            mode = 'hba'
+            im_noise_eff = 6.71466811213 * np.cos(np.deg2rad(90-elevations))**(-1)* float(theor_noise)
+            im_noise_eff_err = abs(0.5 * ((62*(np.cos(np.deg2rad(90-elevations)))**(-2)) - im_noise_eff))
     else:
-        im_noise_eff = float(theor_noise) * np.cos(np.deg2rad(90-elevations))**(-1)
-    
+        mode = 'lba'
+        im_noise_eff = np.cos(np.deg2rad(90-elevations))**(-1)* float(theor_noise)
+        im_noise_eff_err = np.zeros(len(im_noise_eff))
+
     theor_col = []
     eff_col = []
+    error_col = []
     # Iterate through the effective sensitivities and make columns
     for eff_rms in im_noise_eff:
         # the theoretical sensitivity column will have the same values
         theor_col.append('{:0.2f}'.format(float(theor_noise)))
         # the effective sensitivity column values change due to different elevations
         eff_col.append('{:0.2f}'.format(float(eff_rms)))
+    
+    for std in im_noise_eff_err:
+        error_col.append('{:0.2f}'.format(float(std)))
         
     # Add the columns to the table
     col_values.append(theor_col)
     col_values.append(eff_col)
+    col_values.append(error_col)
 
     tab = Table(
         header=header,
