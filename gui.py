@@ -352,17 +352,23 @@ warntext = \
 """
 **Notes:**
 
-The various features of this calculator are documented on the [LOFAR Imaging Cookbook](https://support.astron.nl/LOFARImagingCookbook/calculator.html).
 
-The theoretical rms calculation performed by this tool follow [SKA Memo 113](http://www.skatelescope.org/uploaded/59513_113_Memo_Nijboer.pdf) by Nijboer, Pandey-Pommier & de Bruyn. It uses theoretical SEFD values. So, please use it with caution.
+The [LOFAR Imaging Cookbook](https://support.astron.nl/LOFARImagingCookbook/calculator.html) describes the various features of this calculator.
 
-The effective rms calculation implements a standard geometrical correction based on the target’s mean elevation around its transit point for a specific observation duration. 
-The uncertainties for HBA modes are based on the findings of Shimwell et al 2021 (https://doi.org/10.1051/0004-6361/202142484) and are left 0 for LBA modes until more data is provided.
 
-Calculation of a target’s mean elevation around its transit point for a specific observation duration 
+This tool's theoretical rms calculation is based on [SKA Memo 113](http://www.skatelescope.org/uploaded/59513_113_Memo_Nijboer.pdf) by Nijboer, Pandey-Pommier & de Bruyn.
+It makes use of theoretical SEFD values. As a result, please use it with caution.
 
-LUCI (version 20200114) was written and is maintained for the LOFAR Science Operations & Support group by Sarrvesh Sridhar. The source code is publicly available on [GitHub](https://github.com/scisup/LOFAR-calculator). For comments and/or feature requests, please contact the Science Operations & Support group using the [Helpdesk](https://support.astron.nl/rohelpdesk).
+
+The effective rms calculation applies a standard geometrical correction based on the target's mean elevation around its transit point for a given observation period and date.
+The uncertainties for HBA modes are based on Shimwell et al 2021's findings [The LOFAR Two-metre Sky Survey](https://doi.org/10.1051/0004-6361/202142484) and are set to 0 for
+LBA modes until more data is available.
+
+
+LUCI (version 20200114) was written and is maintained for the LOFAR Science Operations & Support group by Sarrvesh Sridhar. The source code is publicly available on [GitHub](https://github.com/scisup/LOFAR-calculator).
+For comments and/or feature requests, please contact the Science Operations & Support group using the [Helpdesk](https://support.astron.nl/rohelpdesk).
 """
+
 cautiontext = html.Div([
                   dcc.Markdown(children=warntext)
               ], style={'width':'90%'})
