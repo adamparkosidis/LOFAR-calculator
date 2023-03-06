@@ -386,21 +386,8 @@ def on_calculate_click(n, n_clicks, obs_t, n_core, n_remote, n_int, n_chan, n_sb
                 # Create a figure with the elevation of the targets
                 elevation_fig = tv.create_fig_add_lst_axis(src_name, coord_list, obs_date, int(n_int))
 
-                # Save an object with the data of the figure for pdf generator
-                elevation_fig_pdf = elevation_fig.data
-                # data = tv.find_target_elevation(src_name, coord_list,
-                #                                 obs_date, int(n_int))
 
                 display_fig = {'display':'block', 'height':600}
-
-                # elevation_fig = {'data':data,
-                #     'layout':{
-                #     'xaxis':{'title':'Time (UTC)'},
-                #     'yaxis':{'title':'Elevation'},
-                #     'title':'Target visibility plot',
-                #     'shapes':[]
-                #     }
-                #     }
 
                 # Find the position of the station and tile beam
                 beam_fig = tv.find_beam_layout(src_name_input, coord_input, \
@@ -414,9 +401,9 @@ def on_calculate_click(n, n_clicks, obs_t, n_core, n_remote, n_int, n_chan, n_sb
                 distance_tab = {'data':table_data,
                                 'layout':{'title':table_title, 'autosize':True}
                                }
-                display_sens_tab = {'display':'block'}
+                display_sens_tab = {'display':'block', 'height':300}
                 sens_table_data = [tv.make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, im_noise, hba_mode)]
-                sens_table_title = 'Sensitivity Results'
+                sens_table_title = '<b>Sensitivity Results</b>'
                 sensitivity_tab = {'data':sens_table_data,
                                 'layout':{'title':sens_table_title, 'autosize':True}
                               }

@@ -6,6 +6,7 @@ from fpdf import FPDF, HTMLMixin
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+import plotly.io as pio
 
 
 # Dummy class needed to generate the PDF file
@@ -27,54 +28,54 @@ def convert_figure_to_axis_info(figure):
     label = figure['name']
     return xaxis, yaxis, label
 
-# def make_pdf_plot(elevation_fig, outfilename):
-#     elevation_fig.write_image(outfilename)
-
 def make_pdf_plot(elevation_fig, outfilename):
-    """For a given elevation_fig object and output filename, generate a
-       matplotlib plot and write it to disk."""
-    fig, ax = plt.subplots(1, 1, figsize=(8, 5))
-    # The last figure containt the lst axis data, which is type str
-    for figure in elevation_fig['data'][:-1]:
-        xaxis, yaxis, label = convert_figure_to_axis_info(figure)
-        ax.plot(xaxis, yaxis, label=label)
-    hour_loc = (0, 3, 6, 9, 12, 15, 18, 21)
-    ax.xaxis.set_major_locator(mdates.HourLocator(hour_loc))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
-    plt.xlabel('Time (UTC)', fontsize=14)
-    plt.ylabel('Elevation (deg)', fontsize=14)
-    plt.title('Target visibility plot', fontsize=14)
+     pio.write_image(elevation_fig,outfilename, format='png')
 
-    # Highlight sunrise
-    sun_rise_dict = elevation_fig['layout']['shapes'][0]
-    temp_date = sun_rise_dict['x0'].split('.')[0]
-    x_min = datetime.strptime(temp_date, '%Y-%m-%dT%H:%M:%S')
-    temp_date = sun_rise_dict['x1'].split('.')[0]
-    x_max = datetime.strptime(temp_date, '%Y-%m-%dT%H:%M:%S')
-    y_min = sun_rise_dict['y0']
-    y_max = sun_rise_dict['y1']
-    rect = Rectangle((x_min, y_min), width=x_max-x_min, height=y_max, fill=True,
-                     edgecolor=None, facecolor='lightskyblue')
-    ax.add_patch(rect)
+# def make_pdf_plot(elevation_fig, outfilename):
+#     """For a given elevation_fig object and output filename, generate a
+#        matplotlib plot and write it to disk."""
+#     fig, ax = plt.subplots(1, 1, figsize=(8, 5))
+#     # The last figure containt the lst axis data, which is type str
+#     for figure in elevation_fig['data'][:-1]:
+#         xaxis, yaxis, label = convert_figure_to_axis_info(figure)
+#         ax.plot(xaxis, yaxis, label=label)
+#     hour_loc = (0, 3, 6, 9, 12, 15, 18, 21)
+#     ax.xaxis.set_major_locator(mdates.HourLocator(hour_loc))
+#     ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
+#     plt.xlabel('Time (UTC)', fontsize=14)
+#     plt.ylabel('Elevation (deg)', fontsize=14)
+#     plt.title('Target visibility plot', fontsize=14)
 
-    # Highlight sunset
-    sun_set_dict = elevation_fig['layout']['shapes'][1]
-    temp_date = sun_set_dict['x0'].split('.')[0]
-    x_min = datetime.strptime(temp_date, '%Y-%m-%dT%H:%M:%S')
-    temp_date = sun_set_dict['x1'].split('.')[0]
-    x_max = datetime.strptime(temp_date, '%Y-%m-%dT%H:%M:%S')
-    y_min = sun_set_dict['y0']
-    y_max = sun_set_dict['y1']
-    rect = Rectangle((x_min, y_min), width=x_max-x_min, height=y_max, fill=True,
-                     edgecolor=None, facecolor='lightskyblue')
-    ax.add_patch(rect)
+#     # Highlight sunrise
+#     sun_rise_dict = elevation_fig['layout']['shapes'][0]
+#     temp_date = sun_rise_dict['x0'].split('.')[0]
+#     x_min = datetime.strptime(temp_date, '%Y-%m-%dT%H:%M:%S')
+#     temp_date = sun_rise_dict['x1'].split('.')[0]
+#     x_max = datetime.strptime(temp_date, '%Y-%m-%dT%H:%M:%S')
+#     y_min = sun_rise_dict['y0']
+#     y_max = sun_rise_dict['y1']
+#     rect = Rectangle((x_min, y_min), width=x_max-x_min, height=y_max, fill=True,
+#                      edgecolor=None, facecolor='lightskyblue')
+#     ax.add_patch(rect)
 
-    plt.ylim([0, 90])
+#     # Highlight sunset
+#     sun_set_dict = elevation_fig['layout']['shapes'][1]
+#     temp_date = sun_set_dict['x0'].split('.')[0]
+#     x_min = datetime.strptime(temp_date, '%Y-%m-%dT%H:%M:%S')
+#     temp_date = sun_set_dict['x1'].split('.')[0]
+#     x_max = datetime.strptime(temp_date, '%Y-%m-%dT%H:%M:%S')
+#     y_min = sun_set_dict['y0']
+#     y_max = sun_set_dict['y1']
+#     rect = Rectangle((x_min, y_min), width=x_max-x_min, height=y_max, fill=True,
+#                      edgecolor=None, facecolor='lightskyblue')
+#     ax.add_patch(rect)
 
-    if len(elevation_fig['data']) > 1:
-        ax.legend(fontsize=14)
-    plt.tight_layout()
-    plt.savefig(outfilename, dpi=100)
+#     plt.ylim([0, 90])
+
+#     if len(elevation_fig['data']) > 1:
+#         ax.legend(fontsize=14)
+#     plt.tight_layout()
+#     plt.savefig(outfilename, dpi=100)
 
 def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t,
                  antenna_set, pipe_type, t_avg, f_avg, is_dysco, raw_size, proc_size, 
@@ -135,8 +136,8 @@ def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t
 
     # Add the sensitivity table to the PDF
     if sensitivity_table != {}:
-        title = sensitivity_table['layout']['title']
-        string += '<head><center><b>{}</b></center></head>'.format(title)
+        title = sensitivity_table['layout']['title']['text']
+        string += '<center>{}</center>'.format(title)
         string += '<table border="0" align="left" width="80%">'
         col_titles = sensitivity_table['data'][0]['header']['values']
         col_width = 110//len(col_titles)
@@ -170,9 +171,8 @@ def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t
 
     # Add the distance table to the PDF
     if distance_table != {}:
-        title = distance_table['layout']['title']
-        string += '<center>{}</center>'.format(title)
-        #string += '<center><b>{}</b></center>'.format(title)
+        title = distance_table['layout']['title']['text']
+        string += '<center><b>{}</b></center>'.format(title)
         string += '<table border="0" align="left" width="80%">'
         col_titles = distance_table['data'][0]['header']['values']
         col_width = 100//len(col_titles)

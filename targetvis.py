@@ -477,7 +477,8 @@ def create_fig_add_lst_axis(src_name, coord, obs_date, n_int):
     layout = go.Layout(
     title='Target visibility plot',
     xaxis=dict(
-        title="Time (UTC)"
+        title="Time (UTC)",
+        nticks=8
     ),
     xaxis2 = dict(
         title="Time (LST )",
@@ -612,7 +613,7 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
     """Generate a plotly Table showing the theoretical and efffective target 
        sensitivities"""
 
-    col_names = ['Targets', 'Theoretical rms (uJy/beam)', 'Effective rms (uJy/beam)', 'Effective rms uncertainty (uJy/beam)']
+    col_names = ['Target Names', 'Theoretical rms (uJy/beam)', 'Effective rms (uJy/beam)']
 
     header = {
         'values': col_names,
@@ -636,21 +637,18 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
 
     theor_col = []
     eff_col = []
-    error_col = []
+
     # Iterate through the effective sensitivities and make columns
-    for eff_rms in im_noise_eff:
+    for eff_rms,std in zip(im_noise_eff,im_noise_eff_err):
         # the theoretical sensitivity column will have the same values
         theor_col.append('{:0.2f}'.format(float(theor_noise)))
-        # the effective sensitivity column values change due to different elevations
-        eff_col.append('{:0.2f}'.format(float(eff_rms)))
-    
-    for std in im_noise_eff_err:
-        error_col.append('{:0.2f}'.format(float(std)))
-        
+        # the effective sensitivity column values with errors change due to different elevations
+        eff_col.append(u'{:0.2f} \u00B1 {:0.2f}'.format(float(eff_rms),float(std)))
+
     # Add the columns to the table
     col_values.append(theor_col)
     col_values.append(eff_col)
-    col_values.append(error_col)
+
 
     tab = Table(
         header=header,
