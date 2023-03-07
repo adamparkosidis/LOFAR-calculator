@@ -354,7 +354,7 @@ def find_target_elevation(src_name, coord, obs_date, n_int):
     # Get a list of values along the time axis
     xaxis = []
     temp_time = start_time
-    while temp_time < end_time:
+    while temp_time <= end_time:
         xaxis.append(temp_time)
         temp_time += timedelta(minutes=5)
 
@@ -455,30 +455,29 @@ def create_fig_add_lst_axis(src_name, coord, obs_date, n_int):
     d = obs_date.split('-')
     start_time = datetime(int(d[0]), int(d[1]), int(d[2]), 0, 0, 0)
     end_time = start_time + timedelta(days=1)
-    # Get a list of values along the utc time axis
-    xaxis = []
     temp_time = start_time
-    while temp_time < end_time:
-        xaxis.append(temp_time)
-        temp_time += timedelta(minutes=5)
-
     # Define lofar's postion as the observser's position     
     lofar = get_dutch_lofar_object()
 
+    # Get a list of values along the utc time axis
+    xaxis = []
     # Get a list of values along the lst time axis    
     xaxis_sidereal_t = []
-    for time in xaxis:
-            lofar.date = time
-            lst_time = lofar.sidereal_time()
-            lst_time = datetime.strptime(str(lst_time), '%H:%M:%S.%f')
-            xaxis_sidereal_t.append(lst_time.strftime('%H:%M')) 
     
+    while temp_time <= end_time:
+        xaxis.append(temp_time)
+        lofar.date = temp_time
+        lst_time = lofar.sidereal_time()
+        lst_time = datetime.strptime(str(lst_time), '%H:%M:%S.%f')
+        xaxis_sidereal_t.append(lst_time.strftime('%H:%M'))
+        temp_time += timedelta(minutes=5)
+     
     # Define custom layout for the figure
     layout = go.Layout(
     title='Target visibility plot',
     xaxis=dict(
         title="Time (UTC)",
-        nticks=8
+        nticks=9
     ),
     xaxis2 = dict(
         title="Time (LST )",
