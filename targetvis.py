@@ -292,7 +292,7 @@ def get_elevation_target(target, obs_date, n_int):
 def find_target_max_mean_elevation(src_name_list, coord, obs_date, obs_t, n_int):
     """Input: target(s), coordinates, observation date and observation duration,
     Output: mean elevation of the target(s) based on their maximum elevation. Find 
-    when the maximum elevation of a target occurs for a given date and calculate the
+    when the target's maximum elevation occurs (transit) for a given date and calculate the
     mean elevation between obs_t/2 before and after that. Return an array with the
     the mean elevations."""
     # Find the start and the end times
@@ -449,7 +449,7 @@ def add_sun_rise_and_set_times(obs_date, n_int, elevation_fig):
     return elevation_fig
 
 def create_fig_add_lst_axis(src_name, coord, obs_date, n_int):
-    """For a given elevation figure, create anad add a second x axis with the sidereal time. 
+    """For a given elevation figure data, create and add a second x axis with the sidereal time. 
     Dutch Lofar array is taken as the position of the observer. Return the figure"""
     # Find the start and the end times
     d = obs_date.split('-')
@@ -609,8 +609,8 @@ def make_distance_table(src_name_input, coord_input, obs_date):
     )
     return tab
 def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_noise, antenna_mode):
-    """Generate a plotly Table showing the theoretical and efffective target 
-       sensitivities"""
+    """Generate a plotly Table showing the theoretical and effective target 
+       sensitivities. Return the table"""
 
     col_names = ['Target Names', 'Theoretical rms (uJy/beam)', 'Effective rms (uJy/beam)']
 
@@ -624,7 +624,7 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
     col_values = [src_name_input.split(',')]
 
     elevations = find_target_max_mean_elevation(src_name_input, coord_input, obs_date, float(obs_t), int(n_int))
-
+    #TODO: Need a better estimation of the HBA uncertainties, plus LBA uncertainties when data is provided 
     if 'hba' in antenna_mode:
             mode = 'hba'
             im_noise_eff = 6.71466811213 * np.cos(np.deg2rad(90-elevations))**(-1)* float(theor_noise)
