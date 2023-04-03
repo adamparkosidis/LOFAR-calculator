@@ -56,7 +56,10 @@ def get_ie_lofar_object():
     return ie
 
 def get_station_beam_size(n_core, n_remote, n_int, antenna_mode):
-    """Return FWHM of station beam for a given antenna list and array mode"""
+    """
+    Return FWHM of station beam for a given antenna list and array mode. Values provided in
+    https://www.aanda.org/articles/aa/full_html/2013/08/aa20873-12/aa20873-12.html Table B.1.
+    """
     # FWHM of station beams in deg
     corefwhm = {'lba':5.16, 'hba':3.80}
     remotefwhm = {'lba':5.16, 'hba':2.85}
