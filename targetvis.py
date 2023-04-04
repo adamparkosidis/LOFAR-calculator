@@ -66,7 +66,10 @@ def get_station_beam_size(n_core, n_remote, n_int, antenna_mode):
     intfwhm = {'lba':6.46, 'hba':2.07}
     if 'lba' in antenna_mode:
         mode = 'lba'
-        station_beam = corefwhm[mode]
+        if n_int != 0:
+            station_beam = corefwhm[mode]
+        else:
+            station_beam = intfwhm[mode]
     else:
         mode = 'hba'
         if n_int > 0:
