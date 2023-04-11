@@ -342,8 +342,8 @@ def find_target_max_mean_elevation(src_name_list, coord, obs_date, obs_t, n_int)
         ind = np.nanargmax(elevations)
         maximum_elevations_datetime.append(dates[ind])
         
-        min_date = dates[ind] - timedelta(seconds=obs_t)
-        max_date = dates[ind] + timedelta(seconds=obs_t)
+        min_date = dates[ind] - timedelta(seconds=obs_t/2)
+        max_date = dates[ind] + timedelta(seconds=obs_t/2)
     
         mean_elevations.append(np.nanmean(elevations[np.where(np.logical_and(np.array(dates) >= min_date,np.array(dates) <= max_date))[0]]))
     mean_elevations = np.array(mean_elevations)
