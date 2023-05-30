@@ -154,6 +154,7 @@ hbaDual = dbc.FormGroup([
                 dcc.Dropdown(
                     options=[
                         {'label':'LBA Outer', 'value':'lbaouter'},
+                        {'label':'LBA Sparse', 'value':'lbasparse'},
                         {'label':'HBA Dual', 'value':'hbadual'},
                         {'label':'HBA Dual Inner', 'value':'hbadualinner'}
                     ], value=defaultParams['hbaDual'], searchable=False, 

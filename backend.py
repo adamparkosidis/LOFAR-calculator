@@ -19,17 +19,40 @@ def calculate_im_noise(n_core, n_remote, n_int, hba_mode, obs_t, n_sb):
     # Hardcoded value for subband width
     sb_width = 195.3125 # kHz
 
-    # Hardcoded values for station SEFD
-    core_sefd = {'lba' : 38160, 'hba' : 2820}
-    remote_sefd = {'lba' : 38160, 'hba' : 1410}
-    int_sefd = {'lba' : 18840, 'hba' : 710}
+    '''
+    The HBA values seems to agree with the Memo and the LBA international, but the LBA core and remote
+    seems to be in agreement with the LOFAR PAPER for inner configuration.
+
+    LBA sparse is not an option for international stations. We use tha label 'lbasparse' for international stations
+    but the SEFD referses to internation 'outer'.
+    '''
+
+    # Hardcoded values for station SEFD at 45MHz
+    # original
+    core_sefd = {'lbaouter' : 38160, 'lbasparse': 42124, 'hba' : 2820}
+    remote_sefd = {'lbaouter' : 38160, 'lbasparse': 42124, 'hba' : 1410}
+    int_sefd = {'lbaouter' : 18840, 'lbasparse': 18840, 'hba' : 710}
+
+    #LOFAR PAPER # 60MHz
+    # core_sefd = {'lbaouter' : 27841, 'lbasparse': 29020, 'hba' : 2820}
+    # remote_sefd = {'lbaouter' : 27841, 'lbasparse': 29020, 'hba' : 1410}
+    # int_sefd = {'lbaouter' : 18840,'lbasparse': 18840, 'hba' : 710}
+
+    #MEMO # 60MHz
+    # core_sefd = {'lbaouter' : 27960, 'lbasparse': 29994, 'hba' : 2820}
+    # remote_sefd = {'lbaouter' : 27960, 'lbasparse': 29994, 'hba' : 1410}
+    # int_sefd = {'lbaouter' : 18840,'lbasparse': 18840, 'hba' : 710}
 
     # Figure out whether the user wants to observe with LBA or HBA.
+
+
     if 'hba' in hba_mode:
         mode = 'hba'
         n_core *= 2
+    elif 'sparse' in hba_mode:
+        mode = 'lbasparse'
     else:
-        mode = 'lba'
+        mode = 'lbaouter' 
 
     # Calculate the bandwidth in MHz
     bandwidth = n_sb * sb_width * 1.E3

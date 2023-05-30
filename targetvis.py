@@ -614,6 +614,7 @@ def make_distance_table(src_name_input, coord_input, obs_date):
         cells=dict(values=col_values, align='left')
     )
     return tab
+
 def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_noise, antenna_mode):
     """Generate a plotly Table showing the theoretical and effective target 
        sensitivities. Return the table"""
