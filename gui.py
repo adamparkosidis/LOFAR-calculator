@@ -280,7 +280,8 @@ calList = dbc.FormGroup([
                              {'label':'3C48', 'value':'3C48'},
                              {'label':'3C147', 'value':'3C147'},
                              {'label':'3C196', 'value':'3C196'},
-                             {'label':'3C295', 'value':'3C295'}
+                             {'label':'3C295', 'value':'3C295'},
+                             {'label':'3C380', 'value':'3C380'}
                         ], searchable=True, clearable=True,
                            id='calListRow', multi=True
                      ), width=dropWidth
