@@ -349,7 +349,6 @@ def find_target_max_mean_elevation(src_name_list, coord, obs_date, obs_t, n_int)
     mean_elevations = np.array(mean_elevations)
     return mean_elevations
 
-
 def find_target_elevation(src_name, coord, obs_date, n_int):
     """For a given date and coordinate, find the elevation of the source every
        5 mins. Return both the datetime object array and the elevation array"""
