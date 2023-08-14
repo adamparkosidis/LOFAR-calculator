@@ -359,13 +359,10 @@ The [LOFAR Imaging Cookbook](https://support.astron.nl/LOFARImagingCookbook/calc
 
 
 This tool's theoretical rms calculation is based on [SKA Memo 113](http://www.skatelescope.org/uploaded/59513_113_Memo_Nijboer.pdf) by Nijboer, Pandey-Pommier & de Bruyn.
-It makes use of theoretical SEFD values. As a result, please use it with caution.
+It makes use of theoretical SEFD values optimised at 60 MHz. As a result, please use it with caution.
 
-
-The effective rms calculation applies a standard geometrical correction based on the target's mean elevation around its transit point for a given observation period and date.
-The uncertainties for HBA modes are based on Shimwell et al 2021's findings [The LOFAR Two-metre Sky Survey](https://doi.org/10.1051/0004-6361/202142484) and are set to 0 for
-LBA modes until more data is available.
-
+\*The effective rms calculation for LBA applies a standard geometrical correction based on the target's mean elevation around its transit point for a given observation period and date.
+The effective rms calculation for HBA is based on Shimwell et al 2021's findings [The LOFAR Two-metre Sky Survey](https://doi.org/10.1051/0004-6361/202142484) from which a 5-sigma uncertainty is presented.
 
 LUCI (version 20200114) was written and is maintained for the LOFAR Science Operations & Support group by Sarrvesh Sridhar. The source code is publicly available on [GitHub](https://github.com/scisup/LOFAR-calculator).
 For comments and/or feature requests, please contact the Science Operations & Support group using the [Helpdesk](https://support.astron.nl/rohelpdesk).
