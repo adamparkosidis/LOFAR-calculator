@@ -615,11 +615,20 @@ def make_distance_table(src_name_input, coord_input, obs_date):
     )
     return tab
 
+#used for the effective rms for HBA
+def LUCI_HBA_RMS(x,a,b):
+    '''
+    the analytical expression for the HBA rms data to be calculated with
+    '''
+    y = a*np.cos(np.deg2rad(90-x))**(b)
+    return y
+
+
 def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_noise, antenna_mode):
     """Generate a plotly Table showing the theoretical and effective target 
        sensitivities. Return the table"""
 
-    col_names = ['Target Names', 'Theoretical rms (uJy/beam)', 'Effective rms (uJy/beam)']
+    col_names = ['Target Names', 'Theoretical rms (uJy/beam)', 'Effective rms* (uJy/beam)']
 
     header = {
         'values': col_names,
@@ -631,16 +640,22 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
     col_values = [src_name_input.split(',')]
 
     elevations = find_target_max_mean_elevation(src_name_input, coord_input, obs_date, float(obs_t), int(n_int))
-    #TODO: Need a better estimation of the HBA uncertainties, plus LBA uncertainties when data is provided 
+    
     if 'hba' in antenna_mode:
-            mode = 'hba'
-            im_noise_eff = 6.71466811213 * np.cos(np.deg2rad(90-elevations))**(-1)* float(theor_noise)
-            im_noise_eff_err = abs(0.5 * ((62*(np.cos(np.deg2rad(90-elevations)))**(-2)) - im_noise_eff))
+        mode = 'hba'
+            
+        #setting the fitting parameters
+        a = 65.68071688403371
+        b = -1.6230659912729313
+        std_a = 1.003925484399782 
+        std_b = 0.004728998326033432
+
+        im_noise_eff = LUCI_HBA_RMS(elevations,a,b)
+        im_noise_eff_err = 5 * abs(LUCI_HBA_RMS(elevations,a+std_a,b-std_b) - LUCI_HBA_RMS(elevations,a-std_a,b+std_b))
     else:
         mode = 'lba'
         im_noise_eff = np.cos(np.deg2rad(90-elevations))**(-1)* float(theor_noise)
         im_noise_eff_err = np.zeros(len(im_noise_eff))
-
     theor_col = []
     eff_col = []
 
