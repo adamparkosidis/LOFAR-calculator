@@ -28,24 +28,14 @@ def calculate_im_noise(n_core, n_remote, n_int, hba_mode, obs_t, n_sb):
     '''
 
     # Hardcoded values for station SEFD at 45MHz
-    # original
-    core_sefd = {'lbaouter' : 38160, 'lbasparse': 42124, 'hba' : 2820}
-    remote_sefd = {'lbaouter' : 38160, 'lbasparse': 42124, 'hba' : 1410}
-    int_sefd = {'lbaouter' : 18840, 'lbasparse': 18840, 'hba' : 710}
 
     #LOFAR PAPER # 60MHz
-    # core_sefd = {'lbaouter' : 27841, 'lbasparse': 29020, 'hba' : 2820}
-    # remote_sefd = {'lbaouter' : 27841, 'lbasparse': 29020, 'hba' : 1410}
-    # int_sefd = {'lbaouter' : 18840,'lbasparse': 18840, 'hba' : 710}
+    core_sefd = {'lbaouter' : 27841, 'lbasparse': 29020, 'hba' : 2820}
+    remote_sefd = {'lbaouter' : 27841, 'lbasparse': 29020, 'hba' : 1410}
+    int_sefd = {'lbaouter' : 18840,'lbasparse': 18840, 'hba' : 710}
 
-    #MEMO # 60MHz
-    # core_sefd = {'lbaouter' : 27960, 'lbasparse': 29994, 'hba' : 2820}
-    # remote_sefd = {'lbaouter' : 27960, 'lbasparse': 29994, 'hba' : 1410}
-    # int_sefd = {'lbaouter' : 18840,'lbasparse': 18840, 'hba' : 710}
 
     # Figure out whether the user wants to observe with LBA or HBA.
-
-
     if 'hba' in hba_mode:
         mode = 'hba'
         n_core *= 2
