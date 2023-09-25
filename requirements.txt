@@ -6,3 +6,4 @@ ephem
 fpdf
 matplotlib
 numpy
+kaleido
