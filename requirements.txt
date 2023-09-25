@@ -1,7 +1,7 @@
 astroquery
 astropy
 dash
-dash-bootstrap-components
+dash-bootstrap-components==0.13.1
 ephem
 fpdf
 matplotlib
