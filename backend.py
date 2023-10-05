@@ -2,6 +2,7 @@
 
 import numpy as np
 from astropy.coordinates import SkyCoord
+import targetvis as tv
 
 def compute_baselines(n_core, n_remote, n_int, hba_mode):
     """For a given number of core, remote, and international stations
