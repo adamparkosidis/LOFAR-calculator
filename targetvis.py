@@ -296,6 +296,49 @@ def get_elevation_target(target, obs_date, n_int):
                 yaxis.append(np.min(elevation))
     return yaxis
 
+def target_max_elevation(src_name_list, coord, obs_date, n_int):
+    """Input: target(s), coordinates, observation date and observation duration,
+    Output: max elevation of the target(s) for a given observation day."""
+    # Find the start and the end times
+    coord_list = coord.split(',')
+    d = obs_date.split('-')
+    start_time = datetime(int(d[0]), int(d[1]), int(d[2]), 0, 0, 0)
+    end_time = start_time + timedelta(days=1)
+    # Get a list of values along the time axis
+    xaxis = []
+    temp_time = start_time
+    while temp_time < end_time:
+        xaxis.append(temp_time)
+        temp_time += timedelta(minutes=5)
+
+    # Create a target object
+    return_data = []
+    for i in range(len(coord_list)):
+        target = FixedBody()
+        target._epoch = '2000'
+        coord_target = SkyCoord(coord_list[i])
+        target._ra = coord_target.ra.radian
+        target._dec = coord_target.dec.radian
+
+        # Iterate over each time interval and estimate the elevation of the target
+        yaxis = get_elevation_target(target, xaxis, n_int)
+        # Create a Plotly Scatter object that can be plotted later
+        return_data.append(Scatter(x=xaxis, y=yaxis, mode='lines',
+                                   line={}, name=src_name_list[i]))
+    
+    # Save maximum target elevation and datetime
+
+    maximum_elevations = []
+    
+    for ind, target in enumerate(return_data):
+        dates = np.array(target.x)
+        elevations = np.array(target.y)
+
+        maximum_elevations.append(np.nanmax(elevations))
+    
+    max_evel = np.array(maximum_elevations)
+    return max_evel
+
 def find_target_max_mean_elevation(src_name_list, coord, obs_date, obs_t, n_int):
     """Input: target(s), coordinates, observation date and observation duration,
     Output: mean elevation of the target(s) based on their maximum elevation. Find 
