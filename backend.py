@@ -145,7 +145,7 @@ def calculate_pipe_time(obs_t, n_sb, array_mode, ateam_names, pipe_type):
     return proc_time
 
 def validate_inputs(obs_t, n_core, n_remote, n_int, n_sb, integ_t, t_avg,
-                    f_avg, src_name, coord, hba_mode, pipe_type, ateam_names):
+                    f_avg, src_name, coord, hba_mode, pipe_type, ateam_names, obs_date):
     """Valid text input supplied by the user: observation time, number of
        subbands, and integration time. Following checks will be performed:
          - obs_time is a valid positive number
