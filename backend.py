@@ -158,6 +158,8 @@ def validate_inputs(obs_t, n_core, n_remote, n_int, n_sb, integ_t, t_avg,
          - f_avg is an integer
          - src_name is a string
          - coord is a valid AstroPy coordinate
+         - check if target is below horizon
+         - check if target is above 40 degreees elevation
          - While observing with HBA, check if the targets are inside the tile beam.
          - ateam_names <= 2 if pipe_type is not "None"
        Return state=True/False accompanied by an error msg
@@ -225,6 +227,15 @@ def validate_inputs(obs_t, n_core, n_remote, n_int, n_sb, integ_t, t_avg,
         except:
             msg += 'Invalid coodinate value under Target setup. Please make ' +\
                    'sure it is compatible with the AstroPy formats.'
+    #Check for target elevations and return error messages for unobservable sources and sources below 40 degrees elevation.
+    src_name_list = src_name.split(',')
+    source_name = np.array(src_name_list)
+    max_elev = tv.target_max_elevation(src_name_list, coord, obs_date, n_int)
+    for elev in max_elev:
+        if np.isnan(elev):
+            msg = 'Target(s) {} is/are below the horizon, please select a different target, observing time or date. \n'.format(', '.join(source_name[np.where(np.isnan(max_elev))[0]]))
+        elif elev <= 40:
+            msg = 'Target(s) {} is/are below 40 degrees elevation, which is not recommended. Please select a different target.  \n'.format(', '.join(source_name[np.where(max_elev<40)[0]]))                 
     # While observing with HBA, check if the specified targets all lie within 10 deg
     coord_list = coord.split(',')
     if 'hba' in hba_mode and len(coord_list) > 1:
