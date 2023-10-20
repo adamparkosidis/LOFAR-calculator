@@ -384,7 +384,7 @@ def on_calculate_click(n, n_clicks, obs_t, n_core, n_remote, n_int, n_chan, n_sb
                            {'display':'none'}, {}
                 
                 # Create a figure with the elevation of the targets
-                elevation_fig = tv.create_fig_add_lst_axis(src_name, coord_list, obs_date, int(n_int))
+                elevation_fig = tv.create_fig_add_lst_axis(src_name, coord_list, obs_date, int(n_int), obs_t)
 
 
                 display_fig = {'display':'block', 'height':600}
