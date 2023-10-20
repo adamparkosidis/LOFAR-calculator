@@ -235,8 +235,8 @@ def validate_inputs(obs_t, n_core, n_remote, n_int, n_sb, integ_t, t_avg,
     for elev in max_elev:
         if np.isnan(elev):
             msg = 'Target(s) {} is/are below the horizon, please select a different target, observing time or date. \n'.format(', '.join(source_name[np.where(np.isnan(max_elev))[0]]))
-        elif elev <= 40:
-            msg = 'Target(s) {} is/are below 40 degrees elevation, which is not recommended. Please select a different target.  \n'.format(', '.join(source_name[np.where(max_elev<40)[0]]))                 
+        #elif elev <= 40:
+            #msg = 'Target(s) {} is/are below 40 degrees elevation, which is not recommended. Please select a different target.  \n'.format(', '.join(source_name[np.where(max_elev<40)[0]]))                 
     # While observing with HBA, check if the specified targets all lie within 10 deg
     coord_list = coord.split(',')
     if 'hba' in hba_mode and len(coord_list) > 1:
