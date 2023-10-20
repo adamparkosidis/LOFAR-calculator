@@ -435,6 +435,76 @@ def find_target_elevation(src_name, coord, obs_date, n_int):
                                line={}, name='Jupiter'))
     return return_data
 
+
+def targets_overplot_obstime(src_name_list, coord, obs_date, n_int, obs_t):
+    """Input: target(s), coordinates, observation date and observation duration,
+    Output: return_data that should overplot the elevations figure with the specified
+    observation time for all specified targets"""
+    # Find the start and the end times
+    #coord_list = coord.split(',')
+    d = obs_date.split('-')
+    start_time = datetime(int(d[0]), int(d[1]), int(d[2]), 0, 0, 0)
+    end_time = start_time + timedelta(days=1)
+    # Get a list of values along the time axis
+    xaxis = []
+    temp_time = start_time
+    while temp_time < end_time:
+        xaxis.append(temp_time)
+        temp_time += timedelta(minutes=5)
+
+    # Create a target object
+    return_data = []
+    for i in range(len(coord)):
+        target = FixedBody()
+        target._epoch = '2000'
+        coord_target = SkyCoord(coord[i])
+        target._ra = coord_target.ra.radian
+        target._dec = coord_target.dec.radian
+
+        # Iterate over each time interval and estimate the elevation of the target
+        yaxis = get_elevation_target(target, xaxis, n_int)
+        # Create a Plotly Scatter object that can be plotted later
+        return_data.append(Scatter(x=xaxis, y=yaxis, mode='lines',
+                                   line={}, name=src_name_list[i]))
+    
+    maximum_elevations = []
+    maximum_elevations_datetime = []
+    mean_elevations = []
+
+    for ind, target in enumerate(return_data):
+        dates = np.array(target.x)
+        elevations = np.array(target.y)
+
+        maximum_elevations.append(np.nanmax(elevations))
+        ind = np.nanargmax(elevations)
+        maximum_elevations_datetime.append(dates[ind])
+
+    #Start a new begin and end time for the creation of a new plot dependent on the observation time
+    transit_start_time = dates[ind] - timedelta(seconds=float(obs_t)/2)
+    transit_end_time = dates[ind] + timedelta(seconds=float(obs_t)/2)
+    transit_xaxis = []
+    transit_temp_time = transit_start_time
+    while transit_temp_time < transit_end_time:
+        transit_xaxis.append(transit_temp_time)
+        transit_temp_time += timedelta(minutes=5)
+
+    overplot_return_data = []
+    for i in range(len(coord)):
+        target = FixedBody()
+        target._epoch = '2000'
+        coord_target = SkyCoord(coord[i])
+        target._ra = coord_target.ra.radian
+        target._dec = coord_target.dec.radian
+
+        # Iterate over each time interval and estimate the elevation of the target
+        transit_yaxis = get_elevation_target(target, transit_xaxis, n_int)
+        # Create a Plotly Scatter object that can be plotted later
+        overplot_return_data.append(Scatter(x=transit_xaxis, y=transit_yaxis, mode='lines',
+                                   line=dict(width=4,color='DarkSlateGrey'),showlegend=False))
+        
+    
+    return overplot_return_data
+
 def add_sun_rise_and_set_times(obs_date, n_int, elevation_fig):
     """
     For a given obs_date, find the sun rise and set times. Add these to the supplied
@@ -497,7 +567,7 @@ def add_sun_rise_and_set_times(obs_date, n_int, elevation_fig):
     })
     return elevation_fig
 
-def create_fig_add_lst_axis(src_name, coord, obs_date, n_int):
+def create_fig_add_lst_axis(src_name, coord, obs_date, n_int, obs_t):
     """For a given elevation figure data, create and add a second x axis with the sidereal time. 
     Dutch Lofar array is taken as the position of the observer. Return the figure"""
     # Find the start and the end times
@@ -548,6 +618,11 @@ def create_fig_add_lst_axis(src_name, coord, obs_date, n_int):
     for i in traces:
         fig.add_trace(i)
 
+    src_name_list = src_name.split(',')
+    overplot = targets_overplot_obstime(src_name_list, coord, obs_date, n_int, obs_t)
+    for j in overplot:
+        fig.add_trace(j)
+    
     # Add sun rise and sun set at the figure
     fig = add_sun_rise_and_set_times(obs_date, n_int, fig)
 
@@ -689,11 +764,13 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
             
         #setting the fitting parameters
         a = 65.68071688403371
+        a_theor = 3.35619407
         b = -1.6230659912729313
+        b_theor = -1.62306591
         std_a = 1.003925484399782 
         std_b = 0.004728998326033432
 
-        im_noise_eff = LUCI_HBA_RMS(elevations,a,b)
+        im_noise_eff = LUCI_HBA_RMS(elevations,a_theor,b_theor) * float(theor_noise)
         im_noise_eff_err = 5 * abs(LUCI_HBA_RMS(elevations,a+std_a,b-std_b) - LUCI_HBA_RMS(elevations,a-std_a,b+std_b))
     else:
         mode = 'lba'
