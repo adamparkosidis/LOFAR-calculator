@@ -235,8 +235,11 @@ def validate_inputs(obs_t, n_core, n_remote, n_int, n_sb, integ_t, t_avg,
     for elev in max_elev:
         if np.isnan(elev):
             msg = 'Target(s) {} is/are below the horizon, please select a different target, observing time or date. \n'.format(', '.join(source_name[np.where(np.isnan(max_elev))[0]]))
-        #elif elev <= 40:
-            #msg = 'Target(s) {} is/are below 40 degrees elevation, which is not recommended. Please select a different target.  \n'.format(', '.join(source_name[np.where(max_elev<40)[0]]))                 
+    #check for unobservable sources that are below a DEC of -40
+    unobservable_range = np.arange(-90,-40,1)
+    for i in unobservable_range:
+        if '{}d'.format(i) in coord:
+            msg += "Source is unobservable by LOFAR, since it is below -40 DEC."
     # While observing with HBA, check if the specified targets all lie within 10 deg
     coord_list = coord.split(',')
     if 'hba' in hba_mode and len(coord_list) > 1:
