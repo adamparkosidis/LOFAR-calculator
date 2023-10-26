@@ -350,6 +350,15 @@ table = html.Div([
            )
         ])
         ])
+
+
+# Define alert for warnings for certain conditions such as low elevation
+alert = dbc.Alert(
+        'Beware! Sources that are observed below 30/40 degrees elevation with HBA/LBA will experience significantly more ionospheric effects.',
+        id="alert_box",
+        is_open=True,
+        color='warning')
+
 warntext = \
 """
 **Notes:**
@@ -371,7 +380,7 @@ For comments and/or feature requests, please contact the Science Operations & Su
 cautiontext = html.Div([
                   dcc.Markdown(children=warntext)
               ], style={'width':'90%'})
-resultGUISetup = dbc.Form([rawSize, pipeSize, pipeProcTime, table, cautiontext])
+resultGUISetup = dbc.Form([rawSize, pipeSize, pipeProcTime, table, alert, cautiontext])
 resultGUIFrame = html.Div(children=[
                     html.H3('Results'),
                     html.Hr(),
