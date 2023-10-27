@@ -354,7 +354,7 @@ table = html.Div([
 
 # Define alert for warnings for certain conditions such as low elevation
 alert = dbc.Alert(
-        'Beware! Sources that are observed below 30/40 degrees elevation with HBA/LBA will experience significantly more ionospheric effects.',
+        'Beware! When observing below 30/40 degrees elevation with HBA/LBA array, a significant presence of ionospheric effects and errors is expected in the data thus increasing the effective rms.',
         id="alert_box",
         is_open=True,
         color='warning')
