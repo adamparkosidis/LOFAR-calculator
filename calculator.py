@@ -234,6 +234,79 @@ def serve_static(resource):
 # What should the submit button do?
 #######################################
 @app.callback(
+    [Output('download-link', 'style'),
+     Output('download-link', 'href'),
+     Output('msgboxGenPdf', 'is_open')
+    ],
+    [Input('genpdf', 'n_clicks'),
+     Input('mbGenPdfClose', 'n_clicks')
+    ],
+    [State('obsTimeRow', 'value'),
+     State('nCoreRow', 'value'),
+     State('nRemoteRow', 'value'),
+     State('nIntRow', 'value'),
+     State('nChanRow', 'value'),
+     State('nSbRow', 'value'),
+     State('intTimeRow', 'value'),
+     State('hbaDualRow', 'value'),
+     State('coordRow', 'value'),
+
+     State('pipeTypeRow', 'value'),
+     State('tAvgRow', 'value'),
+     State('fAvgRow', 'value'),
+     State('dyCompressRow', 'value'),
+
+     State('rawSizeRow', 'value'),
+     State('pipeSizeRow', 'value'),
+     State('pipeProcTimeRow', 'value'),
+     State('sensitivity-table', 'figure'),
+
+     State('msgboxGenPdf', 'is_open'),
+
+     State('elevation-plot', 'figure'),
+     State('distance-table', 'figure'),
+
+     State('dateRow', 'date')
+    ]
+)
+def on_genpdf_click(n_clicks, close_msg_box, obs_t, n_core, n_remote, n_int, n_chan,
+                    n_sb, integ_t, ant_set, coord, pipe_type, t_avg, f_avg, is_dysco,
+                     raw_size, proc_size, pipe_time, sensitivity_table, is_msg_box_open,
+                    elevation_fig_pdf, distance_table, obs_date):
+    """Function defines what to do when the generate pdf button is clicked"""
+    if is_msg_box_open is True and close_msg_box is not None:
+        # The message box is open and the user has clicked the close
+        # button. Close the alert message.
+        return {'display':'none'}, '', False
+    if n_clicks is None:
+        # Generate button has not been clicked. Hide the download link
+        return {'display':'none'}, '', False
+    else:
+        if raw_size is '':
+            # User has clicked generate PDF button before calculate
+            return {'display':'none'}, '', True
+        else:
+            # Generate a random number so that this user's pdf can be stored here
+            randnum = '{:05d}'.format(randint(0, 10000))
+            rel_path = 'static/'
+            # Generate a relative and absolute filenames to the pdf file
+            rel_path = os.path.join(rel_path, 'summary_{}.pdf'.format(randnum))
+            abs_path = os.path.join(os.getcwd(), rel_path)
+            g.generate_pdf(rel_path, obs_t, n_core, n_remote, n_int, n_chan,
+                           n_sb, integ_t, ant_set, pipe_type, t_avg, f_avg,
+                           is_dysco, raw_size, proc_size, pipe_time, sensitivity_table,
+                           elevation_fig_pdf, distance_table, obs_date)
+            return {'display':'block'}, '/luci/{}'.format(rel_path), False
+
+@app.server.route('/luci/static/<resource>')
+def serve_static(resource):
+    path = os.path.join(os.getcwd(), 'static')
+    return flask.send_from_directory(path, resource)
+
+#######################################
+# What should the submit button do?
+#######################################
+@app.callback(
     [Output('rawSizeRow', 'value'),
      Output('pipeSizeRow', 'value'),
      Output('pipeProcTimeRow', 'value'),
@@ -241,6 +314,7 @@ def serve_static(resource):
      Output('sensitivity-table', 'figure'),
      Output('msgBoxBody', 'children'),
      Output('msgbox', 'is_open'),
+     Output('alert_box', 'is_open'),
      Output('elevation-plot', 'style'),
      Output('elevation-plot', 'figure'),
      Output('beam-plot', 'style'),
@@ -264,6 +338,7 @@ def serve_static(resource):
      State('fAvgRow', 'value'),
      State('dyCompressRow', 'value'),
      State('msgbox', 'is_open'),
+     State('alert_box', 'is_open'),
      State('targetNameRow', 'value'),
      State('coordRow', 'value'),
      State('dateRow', 'date'),
@@ -273,18 +348,18 @@ def serve_static(resource):
 )
 def on_calculate_click(n, n_clicks, obs_t, n_core, n_remote, n_int, n_chan, n_sb,
                        integ_t, hba_mode, pipe_type, t_avg, f_avg, dy_compress,
-                       is_open, src_name, coord, obs_date, calib_names,
+                       is_open, is_open_2, src_name, coord, obs_date, calib_names,
                        ateam_names):
     """Function defines what to do when the calculate button is clicked"""
     if is_open is True:
         # User has closed the error message box
-        return '', '', '', {'display':'none'}, {}, '', False, \
+        return '', '', '', {'display':'none'}, {}, '', False, False,\
                {'display':'none'}, {}, {'display':'none'}, \
                {}, {'display':'none'}, {}
     if n is None:
         # Calculate button has not been clicked yet
         # So, do nothing and set default values to results field
-        return '', '', '', {'display':'none'}, {}, '', False, \
+        return '', '', '', {'display':'none'}, {}, '', False, False,\
                {'display':'none'}, {}, {'display':'none'}, {}, \
                {'display':'none'}, {}
     else:
@@ -305,7 +380,7 @@ def on_calculate_click(n, n_clicks, obs_t, n_core, n_remote, n_int, n_chan, n_sb
                                          src_name, coord, hba_mode, pipe_type, \
                                          ateam_names, obs_date)
         if status is False:
-            return '', '', '', {'display':'none'}, {}, msg, True, \
+            return '', '', '', {'display':'none'}, {}, msg, True, False,\
                    {'display':'none'}, {}, {'display':'none'}, {}, \
                    {'display':'none'}, {}
         else:
@@ -379,7 +454,7 @@ def on_calculate_click(n, n_clicks, obs_t, n_core, n_remote, n_int, n_chan, n_sb
                 if n_sap > max_sap:
                     msg = 'Number of targets times number of subbands cannot ' + \
                           'be greater than {}.'.format(max_sap)
-                    return '', '', '', {'display':'none'}, {}, msg, True, \
+                    return '', '', '', {'display':'none'}, {}, msg, True, False,\
                            {'display':'none'}, {}, {'display':'none'}, {}, \
                            {'display':'none'}, {}
                 
@@ -407,10 +482,24 @@ def on_calculate_click(n, n_clicks, obs_t, n_core, n_remote, n_int, n_chan, n_sb
                 sensitivity_tab = {'data':sens_table_data,
                                 'layout':{'title':sens_table_title, 'autosize':True}
                               }
-
-            return raw_size, avg_size, pipe_time, display_sens_tab, sensitivity_tab, '', \
-                   False, display_fig, elevation_fig, display_fig, beam_fig, \
+            
+            src_name_list = src_name_list = src_name.split(',')
+            maxelev = tv.target_max_elevation(src_name_list, coord, obs_date, n_int)
+            if all(i>30 for i in maxelev) == False and 'hba' in hba_mode:
+                return raw_size, avg_size, pipe_time, display_sens_tab, sensitivity_tab, '', \
+                   False, True, display_fig, elevation_fig, display_fig, beam_fig, \
                    display_tab, distance_tab
+
+            if all(i>40 for i in maxelev) == False and 'lba' in hba_mode:
+                return raw_size, avg_size, pipe_time, display_sens_tab, sensitivity_tab, '', \
+                   False, True, display_fig, elevation_fig, display_fig, beam_fig, \
+                   display_tab, distance_tab
+
+            else:
+                return raw_size, avg_size, pipe_time, display_sens_tab, sensitivity_tab, '', \
+                   False, False, display_fig, elevation_fig, display_fig, beam_fig, \
+                   display_tab, distance_tab
+
 
 if __name__ == '__main__':
     app.run_server(debug=True, host='0.0.0.0', port=8051)
