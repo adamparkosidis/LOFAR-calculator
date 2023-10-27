@@ -234,79 +234,6 @@ def serve_static(resource):
 # What should the submit button do?
 #######################################
 @app.callback(
-    [Output('download-link', 'style'),
-     Output('download-link', 'href'),
-     Output('msgboxGenPdf', 'is_open')
-    ],
-    [Input('genpdf', 'n_clicks'),
-     Input('mbGenPdfClose', 'n_clicks')
-    ],
-    [State('obsTimeRow', 'value'),
-     State('nCoreRow', 'value'),
-     State('nRemoteRow', 'value'),
-     State('nIntRow', 'value'),
-     State('nChanRow', 'value'),
-     State('nSbRow', 'value'),
-     State('intTimeRow', 'value'),
-     State('hbaDualRow', 'value'),
-     State('coordRow', 'value'),
-
-     State('pipeTypeRow', 'value'),
-     State('tAvgRow', 'value'),
-     State('fAvgRow', 'value'),
-     State('dyCompressRow', 'value'),
-
-     State('rawSizeRow', 'value'),
-     State('pipeSizeRow', 'value'),
-     State('pipeProcTimeRow', 'value'),
-     State('sensitivity-table', 'figure'),
-
-     State('msgboxGenPdf', 'is_open'),
-
-     State('elevation-plot', 'figure'),
-     State('distance-table', 'figure'),
-
-     State('dateRow', 'date')
-    ]
-)
-def on_genpdf_click(n_clicks, close_msg_box, obs_t, n_core, n_remote, n_int, n_chan,
-                    n_sb, integ_t, ant_set, coord, pipe_type, t_avg, f_avg, is_dysco,
-                     raw_size, proc_size, pipe_time, sensitivity_table, is_msg_box_open,
-                    elevation_fig_pdf, distance_table, obs_date):
-    """Function defines what to do when the generate pdf button is clicked"""
-    if is_msg_box_open is True and close_msg_box is not None:
-        # The message box is open and the user has clicked the close
-        # button. Close the alert message.
-        return {'display':'none'}, '', False
-    if n_clicks is None:
-        # Generate button has not been clicked. Hide the download link
-        return {'display':'none'}, '', False
-    else:
-        if raw_size is '':
-            # User has clicked generate PDF button before calculate
-            return {'display':'none'}, '', True
-        else:
-            # Generate a random number so that this user's pdf can be stored here
-            randnum = '{:05d}'.format(randint(0, 10000))
-            rel_path = 'static/'
-            # Generate a relative and absolute filenames to the pdf file
-            rel_path = os.path.join(rel_path, 'summary_{}.pdf'.format(randnum))
-            abs_path = os.path.join(os.getcwd(), rel_path)
-            g.generate_pdf(rel_path, obs_t, n_core, n_remote, n_int, n_chan,
-                           n_sb, integ_t, ant_set, pipe_type, t_avg, f_avg,
-                           is_dysco, raw_size, proc_size, pipe_time, sensitivity_table,
-                           elevation_fig_pdf, distance_table, obs_date)
-            return {'display':'block'}, '/luci/{}'.format(rel_path), False
-
-@app.server.route('/luci/static/<resource>')
-def serve_static(resource):
-    path = os.path.join(os.getcwd(), 'static')
-    return flask.send_from_directory(path, resource)
-
-#######################################
-# What should the submit button do?
-#######################################
-@app.callback(
     [Output('rawSizeRow', 'value'),
      Output('pipeSizeRow', 'value'),
      Output('pipeProcTimeRow', 'value'),
@@ -499,7 +426,6 @@ def on_calculate_click(n, n_clicks, obs_t, n_core, n_remote, n_int, n_chan, n_sb
                 return raw_size, avg_size, pipe_time, display_sens_tab, sensitivity_tab, '', \
                    False, False, display_fig, elevation_fig, display_fig, beam_fig, \
                    display_tab, distance_tab
-
 
 if __name__ == '__main__':
     app.run_server(debug=True, host='0.0.0.0', port=8051)
