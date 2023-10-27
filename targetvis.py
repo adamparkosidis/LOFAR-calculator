@@ -746,7 +746,7 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
     """Generate a plotly Table showing the theoretical and effective target 
        sensitivities. Return the table"""
 
-    col_names = ['Target Names', 'Theoretical rms (uJy/beam)', 'Effective rms* (uJy/beam)']
+    col_names = ['Target Names', 'Mean elevation (deg)', 'Theoretical rms (uJy/beam)', 'Geometrically corrected rms (uJy/beam)', 'Effective rms* (uJy/beam)']
 
     header = {
         'values': col_names,
@@ -776,6 +776,7 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
         mode = 'lba'
         im_noise_eff = np.cos(np.deg2rad(90-elevations))**(-1)* float(theor_noise)
         im_noise_eff_err = np.zeros(len(im_noise_eff))
+
     theor_col = []
     eff_col = []
 
@@ -786,10 +787,18 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
         # the effective sensitivity column values with errors change due to different elevations
         eff_col.append(u'{:0.2f} \u00B1 {:0.2f}'.format(float(eff_rms),float(std)))
 
+    elevs = []
+    geo_corr = []
+    for i in elevations:
+        elevs.append('{:0.2f}'.format(i))
+        correction = np.cos(np.deg2rad(90-i))**(-1)* float(theor_noise)
+        geo_corr.append('{:0.2f}'.format(correction))
+    
     # Add the columns to the table
+    col_values.append(elevs)
     col_values.append(theor_col)
+    col_values.append(geo_corr)
     col_values.append(eff_col)
-
 
     tab = Table(
         header=header,
