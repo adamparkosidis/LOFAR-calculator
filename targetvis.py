@@ -746,7 +746,7 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
     """Generate a plotly Table showing the theoretical and effective target 
        sensitivities. Return the table"""
 
-    col_names = ['Target Names', 'Mean elevation (deg)', 'Theoretical rms (uJy/beam)', 'Geometrically corrected rms (uJy/beam)', 'Effective rms* (uJy/beam)']
+    col_names = ['Target Names', 'Mean elevation* (deg)', 'Theoretical rms** (uJy/beam)', 'Effective rms*** (uJy/beam)']
 
     header = {
         'values': col_names,
@@ -796,7 +796,6 @@ def make_sens_table(src_name_input, coord_input, obs_date, obs_t, n_int, theor_n
     
     # Add the columns to the table
     col_values.append(elevs)
-    col_values.append(theor_col)
     col_values.append(geo_corr)
     col_values.append(eff_col)
 
