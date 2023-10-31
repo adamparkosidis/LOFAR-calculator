@@ -488,6 +488,8 @@ def targets_overplot_obstime(src_name_list, coord, obs_date, n_int, obs_t):
         transit_xaxis.append(transit_temp_time)
         transit_temp_time += timedelta(minutes=5)
 
+    colorlist = ['#636EFA','#EF553B','#00CC96','#AB63FA','#FFA15A','#19D3F3','#FF6692','#B6E880','#FF97FF','#FECB52']
+    
     overplot_return_data = []
     for i in range(len(coord)):
         target = FixedBody()
@@ -499,8 +501,8 @@ def targets_overplot_obstime(src_name_list, coord, obs_date, n_int, obs_t):
         # Iterate over each time interval and estimate the elevation of the target
         transit_yaxis = get_elevation_target(target, transit_xaxis, n_int)
         # Create a Plotly Scatter object that can be plotted later
-        overplot_return_data.append(Scatter(x=transit_xaxis, y=transit_yaxis, mode='lines',
-                                   line=dict(width=4,color='DarkSlateGrey'),showlegend=False))
+        overplot_return_data.append(Scatter(x=transit_xaxis, y=transit_yaxis, mode='lines', hoverinfo='none',
+                                   line=dict(width=5,color=colorlist[i]),showlegend=False))
         
     
     return overplot_return_data
@@ -596,7 +598,8 @@ def create_fig_add_lst_axis(src_name, coord, obs_date, n_int, obs_t):
     title='Target visibility plot',
     xaxis=dict(
         title="Time (UTC)",
-        nticks=9
+        nticks=8,
+        range=(xaxis[0],xaxis[-1])
     ),
     xaxis2 = dict(
         title="Time (LST )",
@@ -605,7 +608,8 @@ def create_fig_add_lst_axis(src_name, coord, obs_date, n_int, obs_t):
         nticks=8,
     ),
     yaxis=dict(
-        title="Elevation (deg)"
+        title="Elevation (deg)",
+        range=(0,90)
     ),
     hovermode='x unified')
 
