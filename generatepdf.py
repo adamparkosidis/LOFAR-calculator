@@ -138,10 +138,10 @@ def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t
     if sensitivity_table != {}:
         title = sensitivity_table['layout']['title']['text']
         string += '<center>{}</center>'.format(title)
-        string += '<table border="0" align="left" width="80%">'
-        col_titles = sensitivity_table['data'][0]['header']['values']
-        col_width = 110//len(col_titles)
-        string += '<thead><tr>'
+        string += '<table border="0" align="center" style="table-layout: fixed width: 80%">'
+        #col_titles = sensitivity_table['data'][0]['header']['values']
+        col_titles =['Target', "Mean elevation", "Theoretical rms", "Effective rms"]
+        col_width = 90//len(col_titles)
         for item in col_titles:
             string += '<th width="{}%" align="left">'.format(col_width) + \
                       item + '</th>'
