@@ -481,7 +481,6 @@ def targets_overplot_obstime(src_name_list, coord, obs_date, n_int, obs_t):
     
     maximum_elevations = []
     maximum_elevations_datetime = []
-    mean_elevations = []
 
     for ind, target in enumerate(return_data):
         dates = np.array(target.x)
@@ -491,20 +490,20 @@ def targets_overplot_obstime(src_name_list, coord, obs_date, n_int, obs_t):
         ind = np.nanargmax(elevations)
         maximum_elevations_datetime.append(dates[ind])
 
-    #Start a new begin and end time for the creation of a new plot dependent on the observation time
-    maxmax_date = np.array(maximum_elevations_datetime)[np.where(maximum_elevations==np.max(maximum_elevations))[0]][0]
-    transit_start_time = maxmax_date - timedelta(seconds=float(obs_t)/2)
-    transit_end_time = maxmax_date + timedelta(seconds=float(obs_t)/2)
-    transit_xaxis = []
-    transit_temp_time = transit_start_time
-    while transit_temp_time < transit_end_time:
-        transit_xaxis.append(transit_temp_time)
-        transit_temp_time += timedelta(minutes=5)
-
+    #Start a new begin and end time for the creation of a new plot dependent on the observation time per target
+    maximum_elevations_datetime = np.array(maximum_elevations_datetime)    
     colorlist = ['#636EFA','#EF553B','#00CC96','#AB63FA','#FFA15A','#19D3F3','#FF6692','#B6E880','#FF97FF','#FECB52']
-    
     overplot_return_data = []
+    
     for i in range(len(coord)):
+        #Create a new time axis for each target based on the observation time centered around transit
+        transit_start_time = maximum_elevations_datetime[i] - timedelta(seconds=float(obs_t)/2)
+        transit_end_time = maximum_elevations_datetime[i] + timedelta(seconds=float(obs_t)/2)
+        transit_xaxis = []
+        transit_temp_time = transit_start_time
+        while transit_temp_time < transit_end_time:
+            transit_xaxis.append(transit_temp_time)
+            transit_temp_time += timedelta(minutes=5)
         target = FixedBody()
         target._epoch = '2000'
         coord_target = SkyCoord(coord[i])
