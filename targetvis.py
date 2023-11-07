@@ -452,6 +452,18 @@ def targets_overplot_obstime(src_name_list, coord, obs_date, n_int, obs_t):
         xaxis.append(temp_time)
         temp_time += timedelta(minutes=5)
 
+    #Exclude the calibrators and A-team sources if they are selected for overplotting
+    coord = np.delete(coord, np.where(coord=='01h37m41.2994s +33d09m35.134s'))
+    coord = np.delete(coord, np.where(coord=='08h13m36.033s +48d13m02.56s'))
+    coord = np.delete(coord, np.where(coord=='05h42m36.1379s +49d51m07.234s'))
+    coord = np.delete(coord, np.where(coord=='14h11m20.519s +52d12m09.97s'))
+    coord = np.delete(coord, np.where(coord=='18h29m31.777s +48d44m46.73s'))
+
+    coord = np.delete(coord, np.where(coord=='12h30m49.4233s +12d23m28.043s'))
+    coord = np.delete(coord, np.where(coord=='19h59m28.3566s +40d44m02.096s'))
+    coord = np.delete(coord, np.where(coord=='23h23m24.000s +58d48m54.00s'))
+    coord = np.delete(coord, np.where(coord=='05h34m31.94s +22d00m52.2s'))
+    
     # Create a target object
     return_data = []
     for i in range(len(coord)):
