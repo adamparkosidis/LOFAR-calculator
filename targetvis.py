@@ -480,8 +480,9 @@ def targets_overplot_obstime(src_name_list, coord, obs_date, n_int, obs_t):
         maximum_elevations_datetime.append(dates[ind])
 
     #Start a new begin and end time for the creation of a new plot dependent on the observation time
-    transit_start_time = dates[ind] - timedelta(seconds=float(obs_t)/2)
-    transit_end_time = dates[ind] + timedelta(seconds=float(obs_t)/2)
+    maxmax_date = np.array(maximum_elevations_datetime)[np.where(maximum_elevations==np.max(maximum_elevations))[0]][0]
+    transit_start_time = maxmax_date - timedelta(seconds=float(obs_t)/2)
+    transit_end_time = maxmax_date + timedelta(seconds=float(obs_t)/2)
     transit_xaxis = []
     transit_temp_time = transit_start_time
     while transit_temp_time < transit_end_time:
