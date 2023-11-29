@@ -37,7 +37,7 @@ The Observational setup section in LUCI allows users to specify an interferometr
 
 * **Integration time (in seconds)** – Correlator integration time. This input field determines the time resolution of the observing run (default: 1 second). LUCI thows an error if correlator time is smaller than 0.16 seconds.
 
-* **Antenna set** – specifies the mode in which the stations are operated. Allowed values are LBA Outer, HBA Dual, and HBA Dual Inner. (default: HBA Dual Inner).
+* **Antenna set** – specifies the mode in which the stations are operated. Allowed values are LBA Outer, LBA Sparse, HBA Dual, and HBA Dual Inner. (default: HBA Dual Inner).
 
 Upon clicking the button *Calculate*, LUCI computes the *theoretical image sensitivity*, *effective image sensitivity*, *mean elevation* of input target and the *raw data size*. The results of this computation is displayed to the user under the Results section. Note that before doing the calculations, LUCI validates the input specified by the user. If an invalid input is detected, LUCI displays an error.
 
