@@ -62,7 +62,7 @@ Users can export their “observational setup” to a PDF file using the *Genera
 
 **Note** that if you click on the *Generate PDF* button before using the *Calculate* button, LUCI will throw an error.
 
-## Installing and running
+## Installing and running locally
 To run the calculator on your local machine, install the dependencies with:
 ```
 pip install -r requirements.txt
@@ -72,7 +72,11 @@ To launch the calculator, run the following command:
 ```
 python calculator.py
 ```
-and point your browser at 
+Or if the system has python 3, run the following command:
+```
+python3 calculator.py
+```
+and point your browser at:
 ```
 0.0.0.0:8051/luci/
 ```
