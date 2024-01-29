@@ -7,13 +7,13 @@ LUCI is developed and maintained by the SDC Operations group (SDCO) at ASTRON. F
 
 For a given observation and pipeline setup, the web interface allows users to:
 
-* Compute the raw and processed data size,
+* Compute the raw and pre-processed data size,
 
 * Compute theoretical and effective image sensitivity,
 
 * Estimate the pipeline processing time,
 
-* Plot the elevation of the sources to observe on any given date,
+* Plot the visibility profiles of the sky sources on any given date,
 
 * Plan multi-beam observations, and
 
