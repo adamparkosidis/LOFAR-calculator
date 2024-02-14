@@ -354,7 +354,7 @@ table = html.Div([
 
 # Define alert for warnings for certain conditions such as low elevation
 alert = dbc.Alert(
-        'Beware! When observing below 30/40 degrees elevation with HBA/LBA array, a significant presence of ionospheric effects and errors is expected in the data thus increasing the effective rms.',
+        'Beware! When observing below 30/40 degrees elevation with HBA/LBA array, a significant amount of ionospheric effects and beam errors are expected in the data thus increasing the effective rms.',
         id="alert_box",
         is_open=True,
         color='warning')
@@ -386,7 +386,7 @@ cautiontext = html.Div([
               ], style={'width':'90%'})
 resultGUISetup = dbc.Form([rawSize, pipeSize, pipeProcTime, table, alert, cautiontext])
 resultGUIFrame = html.Div(children=[
-                    html.H3('Results'),
+                    html.H3('Results per target'),
                     html.Hr(),
                     resultGUISetup
                  ], style={'width':'95%', 'padding':'20px'})
