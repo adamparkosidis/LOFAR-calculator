@@ -3,7 +3,7 @@ astropy
 dash
 dash-bootstrap-components==0.13.1
 ephem
-fpdf
+fpdf2
 matplotlib
 numpy
 kaleido
