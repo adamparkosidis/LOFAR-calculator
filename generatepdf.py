@@ -86,7 +86,7 @@ def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t
     # Create an A4 sheet
     pdf = MyFPDF('P', 'mm', 'A4')
     pdf.add_page()
-    pdf.set_font('Arial', '', 16)
+    pdf.set_font('Arial', '', 12)
 
     # Generate an html string to be written to the file
     string = '<table border="0" align="left" width="80%">'
@@ -138,7 +138,7 @@ def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t
     if sensitivity_table != {}:
         title = sensitivity_table['layout']['title']['text']
         string += '<center>{}</center>'.format(title)
-        string += '<table border="0" align="center" style="table-layout: fixed width: 80%">'
+        string += '<table border="0" align="center" style="table-layout: fixed width: 80%"><thead><tr>'
         #col_titles = sensitivity_table['data'][0]['header']['values']
         col_titles =['Target', "Mean elevation", "Theoretical rms", "Effective rms"]
         col_width = 90//len(col_titles)
