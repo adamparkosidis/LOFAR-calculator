@@ -89,7 +89,7 @@ def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t
     pdf.set_font('Arial', '', 12)
 
     # Generate an html string to be written to the file
-    string = '<table border="0" align="left" width="80%">'
+    string = '<table frame="hsides" align="center" width="80%">'
     string += '<thead><tr><th width="70%" align="left">Parameter</th>'
     string += '<th width="30%" align="left">Value</th></tr></thead>'
     string += '<tbody>'
@@ -138,7 +138,7 @@ def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t
     if sensitivity_table != {}:
         title = sensitivity_table['layout']['title']['text']
         string += '<center>{}</center>'.format(title)
-        string += '<table border="0" align="center" style="table-layout: fixed width: 80%"><thead><tr>'
+        string += '<table frame="hsides" align="center" style="table-layout: fixed width: 80%"><thead><tr>'
         #col_titles = sensitivity_table['data'][0]['header']['values']
         col_titles =['Target', "Mean elevation", "Theoretical rms", "Effective rms"]
         col_width = 90//len(col_titles)
@@ -173,7 +173,7 @@ def generate_pdf(pdf_file, obs_t, n_core, n_remote, n_int, n_chan, n_sb, integ_t
     if distance_table != {}:
         title = distance_table['layout']['title']['text']
         string += '<center><b>{}</b></center>'.format(title)
-        string += '<table border="0" align="left" width="80%">'
+        string += '<table frame="hsides" align="center" width="80%">'
         col_titles = distance_table['data'][0]['header']['values']
         col_width = 100//len(col_titles)
         string += '<thead><tr>'
