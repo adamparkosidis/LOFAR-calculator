@@ -377,8 +377,8 @@ It makes use of theoretical SEFD values optimised at 60 MHz. As a result, please
 \*\*\* The effective rms calculation for LBA is currently the same as the theoretical, which has only a standard geometrical correction.
 The effective rms calculation for HBA is based on Shimwell et al 2021's findings [The LOFAR Two-metre Sky Survey](https://doi.org/10.1051/0004-6361/202142484) from which a 5-sigma uncertainty is presented.
 
-LUCI (version 20200114) was written and is maintained for the LOFAR Science Operations & Support group by Sarrvesh Sridhar. The source code is publicly available on [GitHub](https://github.com/scisup/LOFAR-calculator).
-For comments and/or feature requests, please contact the Science Operations & Support group using the [Helpdesk](https://support.astron.nl/rohelpdesk).
+LUCI (version 20200114) was written by Sarrvesh Sridhar and is now maintained for the ASTRON Science Data Center Operations group by Sander ter Veen. The source code is publicly available on [ASTRON Git](https://git.astron.nl/ao/sdco/LOFAR-calculator.git). 
+For comments and/or feature requests, please contact the Science Data Center Operations group using the [Helpdesk](https://support.astron.nl/rohelpdesk).
 """
 
 cautiontext = html.Div([
